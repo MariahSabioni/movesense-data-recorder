@@ -6,7 +6,7 @@
     android:layout_gravity="center"
     android:orientation="vertical"
     android:padding="4dp"
-    tools:context=".NewExpActivity">
+    tools:context=".NewSnippetActivity">
 
     <TextView
         android:id="@+id/exp_title_view"
@@ -72,12 +72,12 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Movement:"
+                android:text="WOD:"
                 android:textColor="@color/grey_700"
                 android:textSize="13sp" />
 
             <Spinner
-                android:id="@+id/spinner_movement"
+                android:id="@+id/spinner_wod"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-light"

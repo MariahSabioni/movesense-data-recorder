@@ -14,6 +14,10 @@ public class GattActions {
     public final static String MOVESENSE_DATA =
             "com.example.movesensedatarecorder.service.MOVESENSE_DATA";
 
+    //flag for hr data
+    public final static String MOVESENSE_HR_DATA =
+            "com.example.movesensedatarecorder.service.MOVESENSE_HR_DATA";
+
     //gatt status and events
     public enum Event {
         GATT_CONNECTED("Connected"),
@@ -22,7 +26,8 @@ public class GattActions {
         MOVESENSE_SERVICE_DISCOVERED("Movesense service"),
         MOVESENSE_SERVICE_NOT_AVAILABLE("Movesense service unavailable"),
         MOVESENSE_NOTIFICATIONS_ENABLED("Notifications enabled"),
-        DATA_AVAILABLE("Data available");
+        DATA_AVAILABLE("Data available"),
+        HR_DATA_AVAILABLE("HR Data available");
 
         @Override
         public String toString() {

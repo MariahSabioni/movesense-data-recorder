@@ -122,7 +122,7 @@ public class AddSubjActivity extends AppCompatActivity {
             Log.i(TAG, "read subjects: " + subjSet);
         }
         subjSet.add(subject);
-        //write into the file
+        //write back into the file
         try {
             saveSubjectFile();
             MsgUtils.showToast(getApplicationContext(), "Subject saved");

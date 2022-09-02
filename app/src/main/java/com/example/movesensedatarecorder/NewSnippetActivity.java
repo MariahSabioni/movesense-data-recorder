@@ -3,7 +3,6 @@ package com.example.movesensedatarecorder;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -16,7 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,9 +25,9 @@ import static com.example.movesensedatarecorder.DataActivity.EXTRAS_EXP_MOV;
 import static com.example.movesensedatarecorder.DataActivity.EXTRAS_EXP_SUBJ;
 import static com.example.movesensedatarecorder.DataActivity.EXTRAS_EXP_TIME;
 
-public class NewExpActivity extends AppCompatActivity {
+public class NewSnippetActivity extends AppCompatActivity {
 
-    private static final String TAG = NewExpActivity.class.getSimpleName();
+    private static final String TAG = NewSnippetActivity.class.getSimpleName();
     private Button buttonRecord;
     private Spinner subjSpinner, movSpinner, locSpinner, timeSpinner;
     private String FILE_NAME = "subjects_data";
@@ -38,7 +36,7 @@ public class NewExpActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_exp);
+        setContentView(R.layout.activity_new_snippet);
 
         boolean fileExist = fileExist(FILE_NAME);
         if (fileExist) {
@@ -57,7 +55,7 @@ public class NewExpActivity extends AppCompatActivity {
 
         ArrayList<String> subjects = new ArrayList<>();
         for (Subject s:subjSet){
-            String subject = s.getName() + "_"+s.getLastName()+"_"+ s.getSubjID().substring(0,8);
+            String subject = s.getName() + "_"+s.getLastName()+"_"+ s.getSubjID();
             subjects.add(subject);
         }
 
@@ -88,7 +86,6 @@ public class NewExpActivity extends AppCompatActivity {
         //save button listener
         buttonRecord = findViewById(R.id.button_record);
         buttonRecord.setOnClickListener(v -> {
-            //startActivity(new Intent(getApplicationContext(), DataActivity.class));
             String subjConcat = subjSpinner.getSelectedItem().toString();
             String subjID = (subjConcat.substring(subjConcat.lastIndexOf("_") + 1));
             setResult(Activity.RESULT_OK,

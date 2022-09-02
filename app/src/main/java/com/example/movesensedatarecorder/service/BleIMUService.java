@@ -15,10 +15,10 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
-import android.os.Parcelable;
 import android.util.Log;
 
 import com.example.movesensedatarecorder.model.DataPoint;
+import com.example.movesensedatarecorder.model.HrPoint;
 import com.example.movesensedatarecorder.utils.DataUtils;
 
 import java.util.ArrayList;
@@ -28,12 +28,14 @@ import java.util.Objects;
 
 import static com.example.movesensedatarecorder.service.GattActions.*;
 import static com.example.movesensedatarecorder.service.UUIDs.CLIENT_CHARACTERISTIC_CONFIG;
+import static com.example.movesensedatarecorder.service.UUIDs.IMU_COMMAND_HR;
 import static com.example.movesensedatarecorder.service.UUIDs.MOVESENSE_2_0_COMMAND_CHARACTERISTIC;
 import static com.example.movesensedatarecorder.service.UUIDs.MOVESENSE_2_0_DATA_CHARACTERISTIC;
 import static com.example.movesensedatarecorder.service.UUIDs.MOVESENSE_2_0_SERVICE;
 import static com.example.movesensedatarecorder.service.UUIDs.IMU_COMMAND;
 import static com.example.movesensedatarecorder.service.UUIDs.MOVESENSE_RESPONSE;
 import static com.example.movesensedatarecorder.service.UUIDs.REQUEST_ID;
+import static com.example.movesensedatarecorder.service.UUIDs.REQUEST_ID_HR;
 
 
 public class BleIMUService extends Service {
@@ -65,8 +67,7 @@ public class BleIMUService extends Service {
             Log.w(TAG, "Device not found.  Unable to connect.");
             return false;
         }
-        // We want to directly connect to the device, so we are setting the autoConnect
-        // parameter to false.
+        // Directly connect to the device, set the autoConnect to false.
         mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
         Log.d(TAG, "Trying to create a new connection.");
         mBluetoothDeviceAddress = address;
@@ -108,13 +109,11 @@ public class BleIMUService extends Service {
                 BluetoothGatt gatt, int status, int newState) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 Log.i(TAG, "Connected to GATT server.");
-
                 broadcastUpdate(Event.GATT_CONNECTED);
                 // attempt to discover services
                 mBluetoothGatt.discoverServices();
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Log.i(TAG, "Disconnected from GATT server.");
-
                 broadcastUpdate(Event.GATT_DISCONNECTED);
             }
         }
@@ -127,7 +126,6 @@ public class BleIMUService extends Service {
                 broadcastUpdate(Event.GATT_SERVICES_DISCOVERED);
                 logServices(gatt); // debug
 
-                // get the heart rate service
                 movesenseService = gatt.getService(MOVESENSE_2_0_SERVICE);
 
                 if (movesenseService != null) {
@@ -138,20 +136,22 @@ public class BleIMUService extends Service {
                             movesenseService.getCharacteristic(
                                     MOVESENSE_2_0_COMMAND_CHARACTERISTIC);
                     // command example: 1, 99, "/Meas/Acc/13"
-
-                    /*
-                    byte[] unsubscribeCommand = new byte[2];
-                    unsubscribeCommand[0] = 2;
-                    unsubscribeCommand[1] = 99;
-                    commandChar.setValue(unsubscribeCommand);
-                     */
+                    BluetoothGattCharacteristic commandChar_HR =
+                            movesenseService.getCharacteristic(
+                                    MOVESENSE_2_0_COMMAND_CHARACTERISTIC);
+                    // command example: 1, 99, "/Meas/HR"
 
                     byte[] command =
                             DataUtils.stringToAsciiArray(REQUEST_ID, IMU_COMMAND);
                     commandChar.setValue(command);
                     boolean wasSuccess = mBluetoothGatt.writeCharacteristic(commandChar);
-                    Log.i(TAG, "commandChar Subscribe: "+ Arrays.toString(command));
-                    Log.i(TAG, "subscribe success = " + wasSuccess);
+                    Log.i(TAG, "commandChar Subscribe: " + Arrays.toString(command) + " | success = " + wasSuccess);
+
+                    byte[] command_HR =
+                            DataUtils.stringToAsciiArray(REQUEST_ID_HR, IMU_COMMAND_HR);
+                    commandChar_HR.setValue(command_HR);
+                    boolean wasSuccess_HR = mBluetoothGatt.writeCharacteristic(commandChar_HR);
+                    Log.i(TAG, "commandChar_HR Subscribe: " + Arrays.toString(command_HR) + " | success = " + wasSuccess_HR);
 
                 } else {
                     broadcastUpdate(Event.MOVESENSE_SERVICE_NOT_AVAILABLE);
@@ -207,12 +207,23 @@ public class BleIMUService extends Service {
                     ArrayList<DataPoint> dataPointList = DataUtils.IMU6DataConverter(data);
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        if (Objects.isNull(dataPointList)){
+                        if (Objects.isNull(dataPointList)) {
                             return;
                         }
                     }
                     //broadcast data update
-                    broadcastMovesenseUpdate(dataPointList);
+                    broadcastMovesenseDataUpdate(dataPointList);
+                } else if (data[0] == MOVESENSE_RESPONSE && data[1] == REQUEST_ID_HR) {
+
+                    ArrayList<HrPoint> hrPointList = DataUtils.HrDataConverter(data);
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        if (Objects.isNull(hrPointList)) {
+                            return;
+                        }
+                    }
+                    //broadcast data update
+                    broadcastMovesenseHrDataUpdate(hrPointList);
                 }
             }
         }
@@ -226,10 +237,17 @@ public class BleIMUService extends Service {
     }
 
     //Broadcast methods for data
-    private void broadcastMovesenseUpdate(final ArrayList<DataPoint> dataPointList) {
+    private void broadcastMovesenseDataUpdate(final ArrayList<DataPoint> dataPointList) {
         final Intent intent = new Intent(ACTION_GATT_MOVESENSE_EVENTS);
         intent.putExtra(EVENT, Event.DATA_AVAILABLE);
         intent.putParcelableArrayListExtra(MOVESENSE_DATA, dataPointList);
+        sendBroadcast(intent);
+    }
+    //Broadcast methods for hr data
+    private void broadcastMovesenseHrDataUpdate(final ArrayList<HrPoint> hrPointList) {
+        final Intent intent = new Intent(ACTION_GATT_MOVESENSE_EVENTS);
+        intent.putExtra(EVENT, Event.HR_DATA_AVAILABLE);
+        intent.putParcelableArrayListExtra(MOVESENSE_HR_DATA, hrPointList);
         sendBroadcast(intent);
     }
 
@@ -261,7 +279,7 @@ public class BleIMUService extends Service {
         List<BluetoothGattService> services = gatt.getServices();
         for (BluetoothGattService service : services) {
             String uuid = service.getUuid().toString();
-            Log.i(TAG, "service: " + uuid);
+            Log.i(TAG, "> service: " + uuid);
         }
     }
 
@@ -271,8 +289,18 @@ public class BleIMUService extends Service {
                 gattService.getCharacteristics();
         for (BluetoothGattCharacteristic chara : characteristics) {
             String uuid = chara.getUuid().toString();
-            Log.i(TAG, "characteristic: " + uuid);
+            Log.i(TAG, ">> characteristic: " + uuid);
+            logCharacteristicProperties(chara);
         }
+    }
+
+    private void logCharacteristicProperties(BluetoothGattCharacteristic pChar) {
+        boolean isCharacteristicWritable = (pChar.getProperties() & (BluetoothGattCharacteristic.PROPERTY_WRITE | BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)) != 0;
+        boolean isCharacteristicReadable = ((pChar.getProperties() & BluetoothGattCharacteristic.PROPERTY_READ) != 0);
+        boolean isCharacteristicNotifiable = (pChar.getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0;
+        Log.i(TAG, ">>> write: " + isCharacteristicWritable);
+        Log.i(TAG, ">>> read: " + isCharacteristicReadable);
+        Log.i(TAG, ">>> notify: " + isCharacteristicNotifiable);
     }
 }
 

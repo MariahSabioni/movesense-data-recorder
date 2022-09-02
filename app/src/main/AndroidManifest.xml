@@ -35,13 +35,13 @@
         <activity
             android:name=".DataActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".AddSubjActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
-            android:theme="@style/AddSubj.Dialog"></activity>
+            android:theme="@style/AddSubj.Dialog" />
 
         <activity
             android:name=".ScanActivity"
@@ -50,7 +50,13 @@
             android:theme="@style/Scan.Dialog">></activity>
 
         <activity
-            android:name=".NewExpActivity"
+            android:name=".NewSnippetActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/Scan.Dialog">></activity>
+
+        <activity
+            android:name=".NewFullWodActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:theme="@style/Scan.Dialog">></activity>
@@ -58,7 +64,7 @@
         <service
             android:name=".service.BleIMUService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
     </application>
 
 </manifest>

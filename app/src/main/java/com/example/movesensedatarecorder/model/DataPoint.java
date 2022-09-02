@@ -10,8 +10,9 @@ public class DataPoint implements Parcelable {
 
     private float accX, accY, accZ, gyroX, gyroY, gyroZ;
     private int time;
+    private long sysTime;
 
-    public DataPoint(int time, float accX,float accY,float accZ,float gyroX,float gyroY,float gyroZ ){
+    public DataPoint(int time, float accX,float accY,float accZ,float gyroX,float gyroY,float gyroZ, long sysTime ){
         this.time = time;
         this.accX = accX;
         this.accY = accY;
@@ -19,6 +20,7 @@ public class DataPoint implements Parcelable {
         this.gyroX = gyroX;
         this.gyroY = gyroY;
         this.gyroZ = gyroZ;
+        this.sysTime = sysTime;
     }
 
     public int getTime() {
@@ -49,6 +51,10 @@ public class DataPoint implements Parcelable {
         return gyroZ;
     }
 
+    public long getSysTime() {
+        return sysTime;
+    }
+
     public int describeContents() {
         return 0;
     }
@@ -61,6 +67,7 @@ public class DataPoint implements Parcelable {
         out.writeFloat(gyroX);
         out.writeFloat(gyroY);
         out.writeFloat(gyroZ);
+        out.writeLong(sysTime);
     }
 
     public static final Parcelable.Creator<DataPoint> CREATOR
@@ -82,6 +89,7 @@ public class DataPoint implements Parcelable {
         gyroX = in.readFloat();
         gyroY = in.readFloat();
         gyroZ = in.readFloat();
+        sysTime = in.readLong();
     }
 
 }

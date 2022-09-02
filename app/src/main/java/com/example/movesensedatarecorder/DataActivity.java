@@ -11,22 +11,21 @@ import android.content.ServiceConnection;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.example.movesensedatarecorder.model.DataPoint;
-import com.example.movesensedatarecorder.model.ExpPoint;
-import com.example.movesensedatarecorder.model.Subject;
+import com.example.movesensedatarecorder.model.ExpDataPoint;
+import com.example.movesensedatarecorder.model.ExpHrDataPoint;
+import com.example.movesensedatarecorder.model.HrPoint;
 import com.example.movesensedatarecorder.service.BleIMUService;
 import com.example.movesensedatarecorder.service.GattActions;
 import com.example.movesensedatarecorder.utils.DataUtils;
 import com.example.movesensedatarecorder.utils.MsgUtils;
-import com.example.movesensedatarecorder.utils.SavingUtils;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -44,6 +43,7 @@ import androidx.core.content.res.ResourcesCompat;
 import static com.example.movesensedatarecorder.service.GattActions.ACTION_GATT_MOVESENSE_EVENTS;
 import static com.example.movesensedatarecorder.service.GattActions.EVENT;
 import static com.example.movesensedatarecorder.service.GattActions.MOVESENSE_DATA;
+import static com.example.movesensedatarecorder.service.GattActions.MOVESENSE_HR_DATA;
 
 public class DataActivity extends Activity {
 
@@ -52,27 +52,31 @@ public class DataActivity extends Activity {
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
 
-    private static final int REQUEST_SUBJECT = 0;
+    private static final int REQUEST_SNIPPET_SETTINGS = 1;
+    private static final int REQUEST_FULL_WOD_SETTINGS = 2;
     public static final String EXTRAS_EXP_SUBJ = "EXP_SUBJ";
     public static final String EXTRAS_EXP_MOV = "EXP_MOV";
+    public static final String EXTRAS_EXP_WOD = "EXP_WOD";
     public static final String EXTRAS_EXP_LOC = "EXP_LOC";
     public static final String EXTRAS_EXP_TIME = "EXP_TIME";
 
-    private TextView mAccView, mGyroView, mStatusView, deviceView, expTitleView;
+    private TextView mAccView, mGyroView, mHrView, mStatusView, deviceView, expTitleView;
     private ImageButton buttonRecord;
+    private ToggleButton toggleSnippet, toggleFull;
 
     private String mDeviceAddress;
     private BleIMUService mBluetoothLeService;
 
-    private String mSubjID, mMov, mLoc, mTimeRecording, mExpID;
+    private String mSubjID, mMov, mLoc, mTimeRecording, mExpID, mWod, mRecordingType;
     private Drawable startRecordDrawable;
     private Drawable stopRecordDrawable;
     private TimerTask timerTask;
     private Timer timer;
     private boolean record = false;
-    private List<ExpPoint> expSet = new ArrayList<>();
+    private List<ExpDataPoint> expDataSet = new ArrayList<>();
+    private List<ExpHrDataPoint> expHrDataSet = new ArrayList<>();
     private String content;
-    private static final int CREATE_FILE = 1;
+    private static final int CREATE_FILE = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -89,8 +93,11 @@ public class DataActivity extends Activity {
         deviceView.setText("Connected to:\n" + deviceName);
         mAccView = findViewById(R.id.acc_view);
         mGyroView = findViewById(R.id.gyro_view);
+        mHrView = findViewById(R.id.hr_view);
         mStatusView = findViewById(R.id.status_view);
         buttonRecord = findViewById(R.id.button_recording);
+        toggleSnippet = findViewById(R.id.toggle_record_exp);
+        toggleFull = findViewById(R.id.toggle_record_full);
         expTitleView = findViewById(R.id.exp_title_view);
 
         Resources resources = getResources();
@@ -99,16 +106,37 @@ public class DataActivity extends Activity {
         buttonRecord.setBackground(startRecordDrawable);
         expTitleView.setText(R.string.record_exp);
 
-        // NB! bind to the BleIMUService
-        // Use onResume or onStart to register a BroadcastReceiver.
+        // Bind to the BleIMUService - onResume or onStart register a BroadcastReceiver.
         Intent gattServiceIntent = new Intent(this, BleIMUService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+
+        toggleFull.setChecked(false);
+        toggleSnippet.setChecked(true);
+        toggleFull.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (b) {
+                toggleSnippet.setChecked(false);
+            } else {
+                toggleSnippet.setChecked(true);
+            }
+        });
+        toggleSnippet.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (b) {
+                toggleFull.setChecked(false);
+            } else {
+                toggleFull.setChecked(true);
+            }
+        });
 
         //record button listener
         buttonRecord.setOnClickListener(v -> {
             if (!record) {
-                Intent intentExp = new Intent(getApplicationContext(), NewExpActivity.class);
-                startActivityForResult(intentExp, REQUEST_SUBJECT);
+                if (!toggleFull.isChecked()) {
+                    Intent intentExp = new Intent(getApplicationContext(), NewSnippetActivity.class);
+                    startActivityForResult(intentExp, REQUEST_SNIPPET_SETTINGS);
+                } else {
+                    Intent intentExp = new Intent(getApplicationContext(), NewFullWodActivity.class);
+                    startActivityForResult(intentExp, REQUEST_FULL_WOD_SETTINGS);
+                }
             } else {
                 timer.cancel();
                 try {
@@ -127,10 +155,10 @@ public class DataActivity extends Activity {
     }
 
     private void resetTimerAndTimerTask() {
-        if (timer != null){
+        if (timer != null) {
             timer.cancel();
         }
-        if (timerTask != null){
+        if (timerTask != null) {
             timerTask.cancel();
         }
         timer = new Timer();
@@ -143,7 +171,7 @@ public class DataActivity extends Activity {
                 });
                 record = false;
                 timer.cancel();
-                Log.e(TAG,"TimerTask finished");
+                Log.e(TAG, "TimerTask finished");
                 try {
                     exportData();
                 } catch (IOException | ClassNotFoundException e) {
@@ -155,10 +183,27 @@ public class DataActivity extends Activity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_SUBJECT && resultCode == Activity.RESULT_OK) {
-            expSet.clear();
+        if (requestCode == REQUEST_SNIPPET_SETTINGS && resultCode == Activity.RESULT_OK) {
+            expDataSet.clear();
+            mRecordingType = "snippet";
+            mWod = null;
             mSubjID = data.getStringExtra(EXTRAS_EXP_SUBJ);
             mMov = data.getStringExtra(EXTRAS_EXP_MOV);
+            mLoc = data.getStringExtra(EXTRAS_EXP_LOC);
+            mTimeRecording = data.getStringExtra(EXTRAS_EXP_TIME);
+            mExpID = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+            record = true;
+            buttonRecord.setBackground(stopRecordDrawable);
+            expTitleView.setText(R.string.recording_exp);
+            //automatic stop
+            resetTimerAndTimerTask();
+            timer.schedule(timerTask, 1000 * Long.parseLong(mTimeRecording));
+        } else if (requestCode == REQUEST_FULL_WOD_SETTINGS && resultCode == Activity.RESULT_OK) {
+            expDataSet.clear();
+            mRecordingType = "wod";
+            mMov = null;
+            mSubjID = data.getStringExtra(EXTRAS_EXP_SUBJ);
+            mWod = data.getStringExtra(EXTRAS_EXP_WOD);
             mLoc = data.getStringExtra(EXTRAS_EXP_LOC);
             mTimeRecording = data.getStringExtra(EXTRAS_EXP_TIME);
             mExpID = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
@@ -257,10 +302,10 @@ public class DataActivity extends Activity {
                             Log.i(TAG, "got data: " + dataPointList);
                             DataPoint dataPoint = dataPointList.get(0);
 
-                            if(record){
+                            if (record) {
                                 for (DataPoint d : dataPointList) {
-                                    ExpPoint expPoint = new ExpPoint(d, mExpID, mMov, mSubjID, mLoc);
-                                    expSet.add(expPoint);
+                                    ExpDataPoint expDataPoint = new ExpDataPoint(d, mExpID, mWod, mMov, mSubjID, mLoc);
+                                    expDataSet.add(expDataPoint);
                                 }
                             }
                             mStatusView.setText(R.string.received);
@@ -268,6 +313,22 @@ public class DataActivity extends Activity {
                             String gyroStr = DataUtils.getGyroAsStr(dataPoint);
                             mAccView.setText(accStr);
                             mGyroView.setText(gyroStr);
+
+                            break;
+                        case HR_DATA_AVAILABLE:
+                            ArrayList<HrPoint> hrPointList = intent.getParcelableArrayListExtra(MOVESENSE_HR_DATA);
+                            Log.i(TAG, "got data: " + hrPointList);
+                            HrPoint hrPoint = hrPointList.get(0);
+
+                            if (record) {
+                                for (HrPoint d : hrPointList) {
+                                    ExpHrDataPoint expHrDataPoint = new ExpHrDataPoint(d, mExpID, mWod, mMov, mSubjID, mLoc);
+                                    expHrDataSet.add(expHrDataPoint);
+                                }
+                            }
+                            mStatusView.setText(R.string.received);
+                            String hrStr = DataUtils.getHrAsStr(hrPoint);
+                            mHrView.setText(hrStr);
 
                             break;
                         case MOVESENSE_SERVICE_NOT_AVAILABLE:
@@ -285,11 +346,11 @@ public class DataActivity extends Activity {
     };
 
     private void exportData() throws IOException, ClassNotFoundException {
-        if (expSet.isEmpty()) {
+        if (expDataSet.isEmpty()) {
             MsgUtils.showToast(getApplicationContext(), "unable to get data");
         }
         try {
-            String heading = "accX,accY,accZ,gyroX,gyroY,gyroZ,time,expID,mov,loc,subjID";
+            String heading = "accX,accY,accZ,gyroX,gyroY,gyroZ,time,sysTime,expID,mov,loc,subjID";
             content = heading + "\n" + recordAsCsv();
             saveToExternalStorage();
         } catch (Exception e) {
@@ -312,8 +373,8 @@ public class DataActivity extends Activity {
         //https://stackoverflow.com/questions/35057456/how-to-write-arraylistobject-to-a-csv-file
         String recordAsCsv = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            recordAsCsv = expSet.stream()
-                    .map(ExpPoint::toCsvRow)
+            recordAsCsv = expDataSet.stream()
+                    .map(ExpDataPoint::dataToCsvRow)
                     .collect(Collectors.joining(System.getProperty("line.separator")));
         }
         return recordAsCsv;
