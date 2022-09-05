@@ -17,7 +17,6 @@ public class DataUtils {
     private final static String TAG = DataUtils.class.getSimpleName();
 
     public static ArrayList<HrPoint> HrDataConverter(byte[] data) {
-
         ArrayList<HrPoint> hrPointList = new ArrayList<>();
         int len = data.length;
         int offset = 2; //byte 1 = op code; byte 2 = request_id
@@ -27,14 +26,11 @@ public class DataUtils {
         int numOfSamples = (len - offset) / dataSize;
         // parse and interpret the data, ...
         if ((len - offset) % dataSize == 0) {
-
             for (int i = 0; i < numOfSamples; i++) {
-
                 int sampleOffset = offset + (i * dataSize);
-                float hr = DataUtils.fourBytesToFloat(data, sampleOffset);
-                int rr = DataUtils.twoBytesToInt(data, sampleOffset + hrDataSize);
+                float hr = DataUtils.bytesToFloat(data, sampleOffset, hrDataSize);
+                int rr = DataUtils.bytesToInt(data, sampleOffset + hrDataSize, rrDataSize);
                 long sysTime = System.currentTimeMillis();
-
                 HrPoint hrPoint = new HrPoint(sysTime, hr, rr);
                 hrPointList.add(hrPoint);
             }
@@ -57,21 +53,16 @@ public class DataUtils {
         int numOfSamples = (len - 6) / (sensorNum * coordinates * imuDataSize); //number os samples in data package
         // parse and interpret the data, ...
         if (((len - 6f) / (sensorNum * coordinates * imuDataSize)) % 1 == 0) {
-
             for (int i = 0; i < numOfSamples; i++) {
-                int time = DataUtils.fourBytesToInt(data, offset);
-
+                int time = DataUtils.bytesToInt(data, offset, timeDataSize);
                 int sampleOffset = offset + timeDataSize + (i * coordinates * imuDataSize);
-                float accX = DataUtils.fourBytesToFloat(data, sampleOffset + 0 * imuDataSize);
-                float accY = DataUtils.fourBytesToFloat(data, sampleOffset + 1 * imuDataSize);
-                float accZ = DataUtils.fourBytesToFloat(data, sampleOffset + 2 * imuDataSize);
-
-                float gyroX = DataUtils.fourBytesToFloat(data, sampleOffset + 0 * imuDataSize + (numOfSamples * coordinates * imuDataSize));
-                float gyroY = DataUtils.fourBytesToFloat(data, sampleOffset + 1 * imuDataSize + (numOfSamples * coordinates * imuDataSize));
-                float gyroZ = DataUtils.fourBytesToFloat(data, sampleOffset + 2 * imuDataSize + (numOfSamples * coordinates * imuDataSize));
-
+                float accX = DataUtils.bytesToFloat(data, sampleOffset + 0 * imuDataSize, imuDataSize);
+                float accY = DataUtils.bytesToFloat(data, sampleOffset + 1 * imuDataSize, imuDataSize);
+                float accZ = DataUtils.bytesToFloat(data, sampleOffset + 2 * imuDataSize, imuDataSize);
+                float gyroX = DataUtils.bytesToFloat(data, sampleOffset + 0 * imuDataSize + (numOfSamples * coordinates * imuDataSize), imuDataSize);
+                float gyroY = DataUtils.bytesToFloat(data, sampleOffset + 1 * imuDataSize + (numOfSamples * coordinates * imuDataSize), imuDataSize);
+                float gyroZ = DataUtils.bytesToFloat(data, sampleOffset + 2 * imuDataSize + (numOfSamples * coordinates * imuDataSize), imuDataSize);
                 long sysTime = System.currentTimeMillis();
-
                 DataPoint datapoint = new DataPoint(time, accX, accY, accZ, gyroX, gyroY, gyroZ, sysTime);
                 dataPointList.add(datapoint);
             }
@@ -82,31 +73,30 @@ public class DataUtils {
         }
     }
 
-    public static int fourBytesToInt(byte[] bytes, int offset) {
-        return ByteBuffer.wrap(bytes, offset, 4).order(ByteOrder.LITTLE_ENDIAN).getInt();
+    public static int bytesToInt(byte[] bytes, int offset, int length) {
+        return ByteBuffer.wrap(bytes, offset, length).order(ByteOrder.LITTLE_ENDIAN).getShort();
     }
 
-    public static int twoBytesToInt(byte[] bytes, int offset) {
-//        int value = 0;
-//        for (byte b : bytes) {
-//            value = (value << 8) + (b & 0xFF);
-//        }
-        return ByteBuffer.wrap(bytes, offset, 2).order(ByteOrder.LITTLE_ENDIAN).getShort();
+    public static float bytesToFloat(byte[] bytes, int offset, int length) {
+        return ByteBuffer.wrap(bytes, offset, length).order(ByteOrder.LITTLE_ENDIAN).getFloat();
     }
 
-    public static float fourBytesToFloat(byte[] bytes, int offset) {
-        return ByteBuffer.wrap(bytes, offset, 4).order(ByteOrder.LITTLE_ENDIAN).getFloat();
-    }
-
-    public static byte[] stringToAsciiArray(byte id, String command) {
-        if (id > 127) throw new IllegalArgumentException("id= " + id);
+    public static byte[] getCommand(String type, byte requestId, String command){
+        if (requestId > 127) throw new IllegalArgumentException("id= " + requestId);
         char[] chars = command.trim().toCharArray();
         byte[] ascii = new byte[chars.length + 2];
-        ascii[0] = 1;
-        ascii[1] = id;
-        for (int i = 0; i < chars.length; i++) {
-            if (chars[i] > 127) throw new IllegalArgumentException("ascii val= " + (int) chars[i]);
-            ascii[i + 2] = (byte) chars[i];
+        ascii[1] = requestId;
+        if (type.equals("stop")){
+            ascii[0] = 2;
+        }else if (type.equals("start")) {
+            ascii[0] = 1;
+            for (int i = 0; i < chars.length; i++) {
+                if (chars[i] > 127)
+                    throw new IllegalArgumentException("ascii val= " + (int) chars[i]);
+                ascii[i + 2] = (byte) chars[i];
+            }
+        }else {
+            throw new IllegalArgumentException("command type not recognized " + type);
         }
         return ascii;
     }

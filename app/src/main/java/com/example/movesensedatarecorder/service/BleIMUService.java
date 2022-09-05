@@ -47,7 +47,6 @@ public class BleIMUService extends Service {
     private BluetoothAdapter mBluetoothAdapter;
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
-
     private BluetoothGattService movesenseService = null;
 
     private final Handler mHandler = new Handler();
@@ -71,6 +70,7 @@ public class BleIMUService extends Service {
             Log.w(TAG, "Device not found.  Unable to connect.");
             return false;
         }
+
         // Directly connect to the device, set the autoConnect to false.
         mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
         Log.i(TAG, "Trying to create a new connection.");
@@ -88,13 +88,11 @@ public class BleIMUService extends Service {
                 return false;
             }
         }
-
         mBluetoothAdapter = mBluetoothManager.getAdapter();
         if (mBluetoothAdapter == null) {
             Log.e(TAG, "Unable to obtain a BluetoothAdapter.");
             return false;
         }
-
         return true;
     }
 
@@ -124,37 +122,22 @@ public class BleIMUService extends Service {
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-
             if (status == BluetoothGatt.GATT_SUCCESS) {
-
                 broadcastUpdate(Event.GATT_SERVICES_DISCOVERED);
                 logServices(gatt); // debug
-
                 movesenseService = gatt.getService(MOVESENSE_2_0_SERVICE);
-
                 if (movesenseService != null) {
                     broadcastUpdate(Event.MOVESENSE_SERVICE_DISCOVERED);
                     logCharacteristics(movesenseService); // debug
 
                     BluetoothGattCharacteristic commandChar =
-                            movesenseService.getCharacteristic(
-                                    MOVESENSE_2_0_COMMAND_CHARACTERISTIC);
-                    // command example: [1, 99, "/Meas/Acc/13"] | [1, 98, "/Meas/HR"]
+                            movesenseService.getCharacteristic(MOVESENSE_2_0_COMMAND_CHARACTERISTIC);
 
                     ArrayList<byte[]> commandList = new ArrayList<>();
-
-                    byte[] resetCommand = new byte[2];
-                    resetCommand[0] = 2;
-                    resetCommand[1] = REQUEST_ID;
-                    byte[] resetCommandHR = new byte[2];
-                    resetCommandHR[0] = 2;
-                    resetCommandHR[1] = REQUEST_ID_HR;
-
-                    byte[] command =
-                            DataUtils.stringToAsciiArray(REQUEST_ID, IMU_COMMAND);
-                    byte[] commandHR =
-                            DataUtils.stringToAsciiArray(REQUEST_ID_HR, IMU_COMMAND_HR);
-
+                    byte[] resetCommand = DataUtils.getCommand("stop",REQUEST_ID,"");
+                    byte[] resetCommandHR = DataUtils.getCommand("stop",REQUEST_ID_HR,"");
+                    byte[] command = DataUtils.getCommand("start",REQUEST_ID,IMU_COMMAND);
+                    byte[] commandHR = DataUtils.getCommand("start",REQUEST_ID_HR,IMU_COMMAND_HR);
                     commandList.add(resetCommand);
                     commandList.add(resetCommandHR);
                     commandList.add(command);
@@ -170,13 +153,10 @@ public class BleIMUService extends Service {
         }
 
         public void subscribeStream(ArrayList<byte[]> commandList, BluetoothGattCharacteristic commandChar) {
-
             commandChar.setValue(commandList.get(0));
             boolean wasSuccess = mBluetoothGatt.writeCharacteristic(commandChar);
             Log.i(TAG, "commandChar Subscribe: " + Arrays.toString(commandList.get(0)) + " | success = " + wasSuccess);
-
             commandList.remove(commandList.get(0));
-
             if (commandList.size() > 0) {
                 mHandler.postDelayed(() -> subscribeStream(commandList, commandChar), 500);
             }
@@ -186,6 +166,7 @@ public class BleIMUService extends Service {
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic
                 characteristic, int status) {
+            //TODO: can this be on char read?
             Log.i(TAG, "onCharacteristicWrite " + characteristic.getUuid().toString());
 
             // First: Enable receiving notifications on the client side, i.e. on this Android.
@@ -224,9 +205,7 @@ public class BleIMUService extends Service {
             if (MOVESENSE_2_0_DATA_CHARACTERISTIC.equals(characteristic.getUuid())) {
                 byte[] data = characteristic.getValue();
                 if (data[0] == MOVESENSE_RESPONSE && data[1] == REQUEST_ID) {
-
                     ArrayList<DataPoint> dataPointList = DataUtils.IMU6DataConverter(data);
-
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         if (Objects.isNull(dataPointList)) {
                             return;
@@ -235,9 +214,7 @@ public class BleIMUService extends Service {
                     //broadcast data update
                     broadcastMovesenseDataUpdate(dataPointList);
                 } else if (data[0] == MOVESENSE_RESPONSE && data[1] == REQUEST_ID_HR) {
-
                     ArrayList<HrPoint> hrPointList = DataUtils.HrDataConverter(data);
-
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         if (Objects.isNull(hrPointList)) {
                             return;
@@ -275,7 +252,6 @@ public class BleIMUService extends Service {
     //Android Service specific code for binding and unbinding to this Android service
     public class LocalBinder extends Binder {
         public BleIMUService getService() {
-
             return BleIMUService.this;
         }
     }
@@ -315,6 +291,7 @@ public class BleIMUService extends Service {
         }
     }
 
+    //logging and debugging
     private void logCharacteristicProperties(BluetoothGattCharacteristic pChar) {
         boolean isCharacteristicWritable = (pChar.getProperties() & (BluetoothGattCharacteristic.PROPERTY_WRITE | BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)) != 0;
         boolean isCharacteristicReadable = ((pChar.getProperties() & BluetoothGattCharacteristic.PROPERTY_READ) != 0);
