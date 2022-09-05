@@ -1,0 +1,1195 @@
+[
+    {
+        "id": "0",
+        "title": "Fran",
+        "tag": "girls",
+        "type": "for-time",
+        "details": [
+            "21-15-9 reps for time of:",
+            "Thrusters (95/65 lbs)",
+            "Pull-ups"
+        ],
+        "timeCap": "0",
+        "exercises": [
+            {
+                "round": "1",
+                "movement": "thruster",
+                "reps": "21",
+                "weightMale": "95",
+                "weightFemale": "65"
+            },
+            {
+                "round": "1",
+                "movement": "pull-up",
+                "reps": "21",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "2",
+                "movement": "thruster",
+                "reps": "15",
+                "weightMale": "95",
+                "weightFemale": "65"
+            },
+            {
+                "round": "2",
+                "movement": "pull-up",
+                "reps": "15",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "3",
+                "movement": "thruster",
+                "reps": "9",
+                "weightMale": "95",
+                "weightFemale": "65"
+            },
+            {
+                "round": "3",
+                "movement": "pull-up",
+                "reps": "9",
+                "weightMale": "0",
+                "weightFemale": "0"
+            }
+        ],
+        "equipment": [
+            "barbell",
+            "rig"
+        ]
+    },
+    {
+        "id": "1",
+        "title": "Cindy",
+        "tag": "girls",
+        "type": "amrap",
+        "details": [
+            "20' AMRAP of:",
+            "5 Pull-ups",
+            "10 Push-ups",
+            "15 Squats"
+        ],
+        "timeCap": "20",
+        "exercises": [
+            {
+                "round": "1",
+                "movement": "pull-up",
+                "reps": "5",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "1",
+                "movement": "push-up",
+                "reps": "10",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "1",
+                "movement": "squat",
+                "reps": "15",
+                "weightMale": "0",
+                "weightFemale": "0"
+            }
+        ],
+        "equipment": [
+            "rig"
+        ]
+    },
+    {
+        "id": "2",
+        "title": "Karen",
+        "tag": "girls",
+        "type": "for-time",
+        "details": [
+            "For time:",
+            "150 Wall-balls (20/14 lbs)"
+        ],
+        "timeCap": "0",
+        "exercises": [
+            {
+                "round": "1",
+                "movement": "wall-ball",
+                "reps": "150",
+                "weightMale": "20",
+                "weightFemale": "14"
+            }
+        ],
+        "equipment": [
+            "medball"
+        ]
+    },
+    {
+        "id": "3",
+        "title": "Mary",
+        "tag": "girls",
+        "type": "amrap",
+        "details": [
+            "20' AMRAP of:",
+            "5 Handstand push-ups",
+            "10 Pistol squats",
+            "15 Pull-ups"
+        ],
+        "timeCap": "20",
+        "exercises": [
+            {
+                "round": "1",
+                "movement": "hspu",
+                "reps": "5",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "1",
+                "movement": "pistol",
+                "reps": "10",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "1",
+                "movement": "pull-up",
+                "reps": "15",
+                "weightMale": "0",
+                "weightFemale": "0"
+            }
+        ],
+        "equipment": [
+            "rig"
+        ]
+    },
+    {
+        "id": "4",
+        "title": "Annie",
+        "tag": "girls",
+        "type": "for-time",
+        "details": [
+            "50-40-30-20-10 reps for time of:",
+            "Double unders",
+            "Sit-ups"
+        ],
+        "timeCap": "0",
+        "exercises": [
+            {
+                "round": "1",
+                "movement": "double-under",
+                "reps": "50",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "1",
+                "movement": "sit-up",
+                "reps": "50",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "2",
+                "movement": "double-under",
+                "reps": "40",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "2",
+                "movement": "sit-up",
+                "reps": "40",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "3",
+                "movement": "double-under",
+                "reps": "30",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "3",
+                "movement": "sit-up",
+                "reps": "30",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "4",
+                "movement": "double-under",
+                "reps": "20",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "4",
+                "movement": "sit-up",
+                "reps": "20",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "5",
+                "movement": "double-under",
+                "reps": "10",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "5",
+                "movement": "sit-up",
+                "reps": "10",
+                "weightMale": "0",
+                "weightFemale": "0"
+            }
+        ],
+        "equipment": [
+            "speed-rope",
+            "abmat"
+        ]
+    },
+    {
+        "id": "5",
+        "title": "Diane",
+        "tag": "girls",
+        "type": "for-time",
+        "details": [
+            "21-15-9 reps for time of:",
+            "Deadlifts (225/155 lbs)",
+            "Handstand push-ups"
+        ],
+        "timeCap": "0",
+        "exercises": [
+            {
+                "round": "1",
+                "movement": "deadlift",
+                "reps": "21",
+                "weightMale": "225",
+                "weightFemale": "65"
+            },
+            {
+                "round": "1",
+                "movement": "hspu",
+                "reps": "21",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "2",
+                "movement": "deadlift",
+                "reps": "15",
+                "weightMale": "225",
+                "weightFemale": "65"
+            },
+            {
+                "round": "2",
+                "movement": "hspu",
+                "reps": "15",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "3",
+                "movement": "deadlift",
+                "reps": "9",
+                "weightMale": "225",
+                "weightFemale": "65"
+            },
+            {
+                "round": "3",
+                "movement": "hspu",
+                "reps": "9",
+                "weightMale": "0",
+                "weightFemale": "0"
+            }
+        ],
+        "equipment": [
+            "barbell"
+        ]
+    },
+    {
+        "id": "6",
+        "title": "Grettel",
+        "tag": "new-girls",
+        "type": "for-time",
+        "details": [
+            "10 rounds for time of:",
+            "3 Clean & jerks (135/95 lbs)",
+            "3 Burpees over the bar"
+        ],
+        "timeCap": "0",
+        "exercises": [
+            {
+                "round": "1",
+                "movement": "clean-n-jerk",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "1",
+                "movement": "botb",
+                "reps": "3",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "2",
+                "movement": "clean-n-jerk",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "2",
+                "movement": "botb",
+                "reps": "3",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "3",
+                "movement": "clean-n-jerk",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "3",
+                "movement": "botb",
+                "reps": "3",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "4",
+                "movement": "clean-n-jerk",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "4",
+                "movement": "botb",
+                "reps": "3",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "5",
+                "movement": "clean-n-jerk",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "5",
+                "movement": "botb",
+                "reps": "3",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "6",
+                "movement": "clean-n-jerk",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "6",
+                "movement": "botb",
+                "reps": "3",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "7",
+                "movement": "clean-n-jerk",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "7",
+                "movement": "botb",
+                "reps": "3",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "8",
+                "movement": "clean-n-jerk",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "8",
+                "movement": "botb",
+                "reps": "3",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "9",
+                "movement": "clean-n-jerk",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "9",
+                "movement": "botb",
+                "reps": "3",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "10",
+                "movement": "clean-n-jerk",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "10",
+                "movement": "botb",
+                "reps": "3",
+                "weightMale": "0",
+                "weightFemale": "0"
+            }
+        ],
+        "equipment": [
+            "barbell"
+        ]
+    },
+    {
+        "id": "7",
+        "title": "Ingrid",
+        "tag": "new-girls",
+        "type": "for-time",
+        "details": [
+            "10 rounds for time of:",
+            "3 Snatches (135/95 lbs)",
+            "3 Burpees over the bar"
+        ],
+        "timeCap": "0",
+        "exercises": [
+            {
+                "round": "1",
+                "movement": "snatch",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "1",
+                "movement": "botb",
+                "reps": "3",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "2",
+                "movement": "snatch",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "2",
+                "movement": "botb",
+                "reps": "3",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "3",
+                "movement": "snatch",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "3",
+                "movement": "botb",
+                "reps": "3",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "4",
+                "movement": "snatch",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "4",
+                "movement": "botb",
+                "reps": "3",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "5",
+                "movement": "snatch",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "5",
+                "movement": "botb",
+                "reps": "3",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "6",
+                "movement": "snatch",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "6",
+                "movement": "botb",
+                "reps": "3",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "7",
+                "movement": "snatch",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "7",
+                "movement": "botb",
+                "reps": "3",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "8",
+                "movement": "snatch",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "8",
+                "movement": "botb",
+                "reps": "3",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "9",
+                "movement": "snatch",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "9",
+                "movement": "botb",
+                "reps": "3",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "10",
+                "movement": "snatch",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "10",
+                "movement": "botb",
+                "reps": "3",
+                "weightMale": "0",
+                "weightFemale": "0"
+            }
+        ],
+        "equipment": [
+            "barbell"
+        ]
+    },
+    {
+        "id": "8",
+        "title": "Back squat 1RM",
+        "tag": "weightlifting",
+        "type": "for-weight",
+        "details": [
+            "For maximum weight:",
+            "1 Back squat "
+        ],
+        "timeCap": "0",
+        "exercises": [
+            {
+                "round":"1",
+                "movement": "back-squat",
+                "reps": "1",
+                "weightMale": "0",
+                "weightFemale": "0"
+            }
+        ],
+        "equipment": [
+            "barbell"
+        ]
+    },
+    {
+        "id": "9",
+        "title": "Back squat 2RM",
+        "tag": "weightlifting",
+        "type": "for-weight",
+        "details": [
+            "For maximum weight:",
+            "2 Back squat "
+        ],
+        "timeCap": "0",
+        "exercises": [
+            {
+                "round":"1",
+                "movement": "back-squat",
+                "reps": "2",
+                "weightMale": "0",
+                "weightFemale": "0"
+            }
+        ],
+        "equipment": [
+            "barbell"
+        ]
+    },
+    {
+        "id": "10",
+        "title": "Back squat 3RM",
+        "tag": "weightlifting",
+        "type": "for-weight",
+        "details": [
+            "For maximum weight:",
+            "3 Back squat "
+        ],
+        "timeCap": "0",
+        "exercises": [
+            {
+                "round":"1",
+                "movement": "back-squat",
+                "reps": "3",
+                "weightMale": "0",
+                "weightFemale": "0"
+            }
+        ],
+        "equipment": [
+            "barbell"
+        ]
+    },
+    {
+        "id": "11",
+        "title": "Back squat 4RM",
+        "tag": "weightlifting",
+        "type": "for-weight",
+        "details": [
+            "For maximum weight:",
+            "4 Back squat "
+        ],
+        "timeCap": "0",
+        "exercises": [
+            {
+                "round":"1",
+                "movement": "back-squat",
+                "reps": "4",
+                "weightMale": "0",
+                "weightFemale": "0"
+            }
+        ],
+        "equipment": [
+            "barbell"
+        ]
+    },
+    {
+        "id": "12",
+        "title": "Back squat 5RM",
+        "tag": "weightlifting",
+        "type": "for-weight",
+        "details": [
+            "For maximum weight:",
+            "5 Back squat "
+        ],
+        "timeCap": "0",
+        "exercises": [
+            {
+                "round":"1",
+                "movement": "back-squat",
+                "reps": "5",
+                "weightMale": "0",
+                "weightFemale": "0"
+            }
+        ],
+        "equipment": [
+            "barbell"
+        ]
+    },
+    {
+        "id": "13",
+        "title": "Back squat 10RM",
+        "tag": "weightlifting",
+        "type": "for-weight",
+        "details": [
+            "For maximum weight:",
+            "10 Back squat "
+        ],
+        "timeCap": "0",
+        "exercises": [
+            {
+                "round":"1",
+                "movement": "back-squat",
+                "reps": "10",
+                "weightMale": "0",
+                "weightFemale": "0"
+            }
+        ],
+        "equipment": [
+            "barbell"
+        ]
+    },
+    {
+        "id": "14",
+        "title": "Back squat 20RM",
+        "tag": "weightlifting",
+        "type": "for-weight",
+        "details": [
+            "For maximum weight:",
+            "20 Back squat "
+        ],
+        "timeCap": "0",
+        "exercises": [
+            {
+                "round":"1",
+                "movement": "back-squat",
+                "reps": "20",
+                "weightMale": "0",
+                "weightFemale": "0"
+            }
+        ],
+        "equipment": [
+            "barbell"
+        ]
+    },
+    {
+        "id": "15",
+        "title": "Front squat 1RM",
+        "tag": "weightlifting",
+        "type": "for-weight",
+        "details": [
+            "For maximum weight:",
+            "1 Front squat "
+        ],
+        "timeCap": "0",
+        "exercises": [
+            {
+                "round":"1",
+                "movement": "front-squat",
+                "reps": "1",
+                "weightMale": "0",
+                "weightFemale": "0"
+            }
+        ],
+        "equipment": [
+            "barbell"
+        ]
+    },
+    {
+        "id": "16",
+        "title": "Front squat 2RM",
+        "tag": "weightlifting",
+        "type": "for-weight",
+        "details": [
+            "For maximum weight:",
+            "2 Front squat "
+        ],
+        "timeCap": "0",
+        "exercises": [
+            {
+                "round":"1",
+                "movement": "front-squat",
+                "reps": "2",
+                "weightMale": "0",
+                "weightFemale": "0"
+            }
+        ],
+        "equipment": [
+            "barbell"
+        ]
+    },
+    {
+        "id": "17",
+        "title": "Front squat 3RM",
+        "tag": "weightlifting",
+        "type": "for-weight",
+        "details": [
+            "For maximum weight:",
+            "3 Front squat "
+        ],
+        "timeCap": "0",
+        "exercises": [
+            {
+                "round":"1",
+                "movement": "front-squat",
+                "reps": "3",
+                "weightMale": "0",
+                "weightFemale": "0"
+            }
+        ],
+        "equipment": [
+            "barbell"
+        ]
+    },
+    {
+        "id": "18",
+        "title": "Front squat 4RM",
+        "tag": "weightlifting",
+        "type": "for-weight",
+        "details": [
+            "For maximum weight:",
+            "4 Front squat "
+        ],
+        "timeCap": "0",
+        "exercises": [
+            {
+                "round":"1",
+                "movement": "front-squat",
+                "reps": "4",
+                "weightMale": "0",
+                "weightFemale": "0"
+            }
+        ],
+        "equipment": [
+            "barbell"
+        ]
+    },
+    {
+        "id": "19",
+        "title": "Front squat 5RM",
+        "tag": "weightlifting",
+        "type": "for-weight",
+        "details": [
+            "For maximum weight:",
+            "5 Front squat "
+        ],
+        "timeCap": "0",
+        "exercises": [
+            {
+                "round":"1",
+                "movement": "front-squat",
+                "reps": "5",
+                "weightMale": "0",
+                "weightFemale": "0"
+            }
+        ],
+        "equipment": [
+            "barbell"
+        ]
+    },
+    {
+        "id": "20",
+        "title": "Front squat 10RM",
+        "tag": "weightlifting",
+        "type": "for-weight",
+        "details": [
+            "For maximum weight:",
+            "10 Front squat "
+        ],
+        "timeCap": "0",
+        "exercises": [
+            {
+                "round":"1",
+                "movement": "front-squat",
+                "reps": "10",
+                "weightMale": "0",
+                "weightFemale": "0"
+            }
+        ],
+        "equipment": [
+            "barbell"
+        ]
+    },
+    {
+        "id": "21",
+        "title": "Front squat 20RM",
+        "tag": "weightlifting",
+        "type": "for-weight",
+        "details": [
+            "For maximum weight:",
+            "20 Front squat "
+        ],
+        "timeCap": "0",
+        "exercises": [
+            {
+                "round":"1",
+                "movement": "front-squat",
+                "reps": "20",
+                "weightMale": "0",
+                "weightFemale": "0"
+            }
+        ],
+        "equipment": [
+            "barbell"
+        ]
+    },
+    {
+        "id": "22",
+        "title": "DT",
+        "tag": "benchmark",
+        "type": "for-time",
+        "details": [
+            "5 rounds for time of:",
+            "12 Deadlifts (155/105 lbs)",
+            "9 Hang power cleans (155/105 lbs)",
+            "6 Push jerks (155/105 lbs)"
+        ],
+        "timeCap": "0",
+        "exercises": [
+            {
+                "round": "1",
+                "movement": "deadlift",
+                "reps": "12",
+                "weightMale": "155",
+                "weightFemale": "105"
+            },
+            {
+                "round": "1",
+                "movement": "hang-power-clean",
+                "reps": "9",
+                "weightMale": "155",
+                "weightFemale": "105"
+            },
+            {
+                "round": "1",
+                "movement": "push-jerk",
+                "reps": "6",
+                "weightMale": "155",
+                "weightFemale": "105"
+            },
+            {
+                "round": "2",
+                "movement": "deadlift",
+                "reps": "12",
+                "weightMale": "155",
+                "weightFemale": "105"
+            },
+            {
+                "round": "2",
+                "movement": "hang-power-clean",
+                "reps": "9",
+                "weightMale": "155",
+                "weightFemale": "105"
+            },
+            {
+                "round": "2",
+                "movement": "push-jerk",
+                "reps": "6",
+                "weightMale": "155",
+                "weightFemale": "105"
+            },
+            {
+                "round": "3",
+                "movement": "deadlift",
+                "reps": "12",
+                "weightMale": "155",
+                "weightFemale": "105"
+            },
+            {
+                "round": "3",
+                "movement": "hang-power-clean",
+                "reps": "9",
+                "weightMale": "155",
+                "weightFemale": "105"
+            },
+            {
+                "round": "3",
+                "movement": "push-jerk",
+                "reps": "6",
+                "weightMale": "155",
+                "weightFemale": "105"
+            },
+            {
+                "round": "4",
+                "movement": "deadlift",
+                "reps": "12",
+                "weightMale": "155",
+                "weightFemale": "105"
+            },
+            {
+                "round": "4",
+                "movement": "hang-power-clean",
+                "reps": "9",
+                "weightMale": "155",
+                "weightFemale": "105"
+            },
+            {
+                "round": "4",
+                "movement": "push-jerk",
+                "reps": "6",
+                "weightMale": "155",
+                "weightFemale": "105"
+            },
+            {
+                "round": "5",
+                "movement": "deadlift",
+                "reps": "12",
+                "weightMale": "155",
+                "weightFemale": "105"
+            },
+            {
+                "round": "5",
+                "movement": "hang-power-clean",
+                "reps": "9",
+                "weightMale": "155",
+                "weightFemale": "105"
+            },
+            {
+                "round": "5",
+                "movement": "push-jerk",
+                "reps": "6",
+                "weightMale": "155",
+                "weightFemale": "105"
+            }
+        ],
+        "equipment": [
+            "barbell"
+        ]
+    },
+    {
+        "id": "23",
+        "title": "The Chief",
+        "tag": "benchmark",
+        "type": "amrap",
+        "details": [
+            "5 rounds of 3' AMRAPs/ 1' rest",
+            "3' AMRAP of:",
+            "3 Power cleans (135/95 lbs)",
+            "6 Push-ups",
+            "9 Air squats",
+            "1' rest",
+            "repeat 5 times"
+        ],
+        "timeCap": "19",
+        "exercises": [
+            {
+                "round": "1",
+                "movement": "power-clean",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "1",
+                "movement": "push-up",
+                "reps": "6",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "1",
+                "movement": "air-squat",
+                "reps": "9",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "2",
+                "movement": "power-clean",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "2",
+                "movement": "push-up",
+                "reps": "6",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "2",
+                "movement": "air-squat",
+                "reps": "9",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "3",
+                "movement": "power-clean",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "3",
+                "movement": "push-up",
+                "reps": "6",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "3",
+                "movement": "air-squat",
+                "reps": "9",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "4",
+                "movement": "power-clean",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "4",
+                "movement": "push-up",
+                "reps": "6",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "4",
+                "movement": "air-squat",
+                "reps": "9",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "5",
+                "movement": "power-clean",
+                "reps": "3",
+                "weightMale": "135",
+                "weightFemale": "95"
+            },
+            {
+                "round": "5",
+                "movement": "push-up",
+                "reps": "6",
+                "weightMale": "0",
+                "weightFemale": "0"
+            },
+            {
+                "round": "5",
+                "movement": "air-squat",
+                "reps": "9",
+                "weightMale": "0",
+                "weightFemale": "0"
+            }
+        ],
+        "equipment": [
+            "barbell"
+        ]
+    }
+]

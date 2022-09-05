@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -49,6 +50,9 @@ public class BleIMUService extends Service {
 
     private BluetoothGattService movesenseService = null;
 
+    private final Handler mHandler = new Handler();
+
+
     public boolean connect(final String address) {
         if (mBluetoothAdapter == null || address == null) {
             Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
@@ -57,7 +61,7 @@ public class BleIMUService extends Service {
 
         // Previously connected device - try to reconnect
         if (address.equals(mBluetoothDeviceAddress) && mBluetoothGatt != null) {
-            Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
+            Log.i(TAG, "Trying to use an existing mBluetoothGatt for connection.");
             boolean result = mBluetoothGatt.connect();
             return result;
         }
@@ -69,7 +73,7 @@ public class BleIMUService extends Service {
         }
         // Directly connect to the device, set the autoConnect to false.
         mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
-        Log.d(TAG, "Trying to create a new connection.");
+        Log.i(TAG, "Trying to create a new connection.");
         mBluetoothDeviceAddress = address;
         return true;
     }
@@ -135,23 +139,28 @@ public class BleIMUService extends Service {
                     BluetoothGattCharacteristic commandChar =
                             movesenseService.getCharacteristic(
                                     MOVESENSE_2_0_COMMAND_CHARACTERISTIC);
-                    // command example: 1, 99, "/Meas/Acc/13"
-                    BluetoothGattCharacteristic commandChar_HR =
-                            movesenseService.getCharacteristic(
-                                    MOVESENSE_2_0_COMMAND_CHARACTERISTIC);
-                    // command example: 1, 99, "/Meas/HR"
+                    // command example: [1, 99, "/Meas/Acc/13"] | [1, 98, "/Meas/HR"]
+
+                    ArrayList<byte[]> commandList = new ArrayList<>();
+
+                    byte[] resetCommand = new byte[2];
+                    resetCommand[0] = 2;
+                    resetCommand[1] = REQUEST_ID;
+                    byte[] resetCommandHR = new byte[2];
+                    resetCommandHR[0] = 2;
+                    resetCommandHR[1] = REQUEST_ID_HR;
 
                     byte[] command =
                             DataUtils.stringToAsciiArray(REQUEST_ID, IMU_COMMAND);
-                    commandChar.setValue(command);
-                    boolean wasSuccess = mBluetoothGatt.writeCharacteristic(commandChar);
-                    Log.i(TAG, "commandChar Subscribe: " + Arrays.toString(command) + " | success = " + wasSuccess);
-
-                    byte[] command_HR =
+                    byte[] commandHR =
                             DataUtils.stringToAsciiArray(REQUEST_ID_HR, IMU_COMMAND_HR);
-                    commandChar_HR.setValue(command_HR);
-                    boolean wasSuccess_HR = mBluetoothGatt.writeCharacteristic(commandChar_HR);
-                    Log.i(TAG, "commandChar_HR Subscribe: " + Arrays.toString(command_HR) + " | success = " + wasSuccess_HR);
+
+                    commandList.add(resetCommand);
+                    commandList.add(resetCommandHR);
+                    commandList.add(command);
+                    commandList.add(commandHR);
+
+                    mHandler.postDelayed(() -> subscribeStream(commandList, commandChar), 500);
 
                 } else {
                     broadcastUpdate(Event.MOVESENSE_SERVICE_NOT_AVAILABLE);
@@ -159,6 +168,20 @@ public class BleIMUService extends Service {
                 }
             }
         }
+
+        public void subscribeStream(ArrayList<byte[]> commandList, BluetoothGattCharacteristic commandChar) {
+
+            commandChar.setValue(commandList.get(0));
+            boolean wasSuccess = mBluetoothGatt.writeCharacteristic(commandChar);
+            Log.i(TAG, "commandChar Subscribe: " + Arrays.toString(commandList.get(0)) + " | success = " + wasSuccess);
+
+            commandList.remove(commandList.get(0));
+
+            if (commandList.size() > 0) {
+                mHandler.postDelayed(() -> subscribeStream(commandList, commandChar), 500);
+            }
+        }
+
 
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic
@@ -187,12 +210,10 @@ public class BleIMUService extends Service {
         @Override
         public void onDescriptorWrite(final BluetoothGatt gatt, BluetoothGattDescriptor
                 descriptor, int status) {
-            Log.i(TAG, "onDescriptorWrite, status " + status);
-
             if (CLIENT_CHARACTERISTIC_CONFIG.equals(descriptor.getUuid()))
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     // if success, we should receive data in onCharacteristicChanged
-                    Log.i(TAG, "notifications enabled" + status);
+                    Log.i(TAG, "notifications enabled");
                     broadcastUpdate(Event.MOVESENSE_NOTIFICATIONS_ENABLED);
                 }
         }

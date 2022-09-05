@@ -8,7 +8,9 @@ import com.example.movesensedatarecorder.model.HrPoint;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class DataUtils {
 
@@ -22,15 +24,15 @@ public class DataUtils {
         int hrDataSize = 4; //32 bit (4 bytes)
         int rrDataSize = 2; //16 bit (2 bytes)
         int dataSize = hrDataSize + rrDataSize;
-        int numOfSamples = len / dataSize;
+        int numOfSamples = (len - offset) / dataSize;
         // parse and interpret the data, ...
-        if (len % dataSize == 0) {
+        if ((len - offset) % dataSize == 0) {
 
             for (int i = 0; i < numOfSamples; i++) {
 
                 int sampleOffset = offset + (i * dataSize);
-                float hr = DataUtils.fourBytesToFloat(data, sampleOffset + hrDataSize);
-                int rr = DataUtils.twoBytesToInt(data, sampleOffset + dataSize);
+                float hr = DataUtils.fourBytesToFloat(data, sampleOffset);
+                int rr = DataUtils.twoBytesToInt(data, sampleOffset + hrDataSize);
                 long sysTime = System.currentTimeMillis();
 
                 HrPoint hrPoint = new HrPoint(sysTime, hr, rr);
@@ -49,23 +51,24 @@ public class DataUtils {
         int len = data.length;
         int sensorNum = 2; //IMU6 has 2 sensors: acc and gyro
         int offset = 2; //byte 1 = op code; byte 2 = request_id
-        int dataSize = 4; //32 bit - 4 bytes
+        int timeDataSize = 4; //32 bit - 4 bytes
+        int imuDataSize = 4; //32 bit - 4 bytes
         int coordinates = 3; //x,y,z
-        int numOfSamples = (len - 6) / (sensorNum * coordinates * dataSize); //number os samples in data package
+        int numOfSamples = (len - 6) / (sensorNum * coordinates * imuDataSize); //number os samples in data package
         // parse and interpret the data, ...
-        if (((len - 6f) / (sensorNum * coordinates * dataSize)) % 1 == 0) {
+        if (((len - 6f) / (sensorNum * coordinates * imuDataSize)) % 1 == 0) {
 
             for (int i = 0; i < numOfSamples; i++) {
                 int time = DataUtils.fourBytesToInt(data, offset);
 
-                int sampleOffset = offset + (i * coordinates * dataSize);
-                float accX = DataUtils.fourBytesToFloat(data, sampleOffset + 1 * dataSize);
-                float accY = DataUtils.fourBytesToFloat(data, sampleOffset + 2 * dataSize);
-                float accZ = DataUtils.fourBytesToFloat(data, sampleOffset + 3 * dataSize);
+                int sampleOffset = offset + timeDataSize + (i * coordinates * imuDataSize);
+                float accX = DataUtils.fourBytesToFloat(data, sampleOffset + 0 * imuDataSize);
+                float accY = DataUtils.fourBytesToFloat(data, sampleOffset + 1 * imuDataSize);
+                float accZ = DataUtils.fourBytesToFloat(data, sampleOffset + 2 * imuDataSize);
 
-                float gyroX = DataUtils.fourBytesToFloat(data, sampleOffset + 1 * dataSize + (numOfSamples * coordinates * dataSize));
-                float gyroY = DataUtils.fourBytesToFloat(data, sampleOffset + 2 * dataSize + (numOfSamples * coordinates * dataSize));
-                float gyroZ = DataUtils.fourBytesToFloat(data, sampleOffset + 3 * dataSize + (numOfSamples * coordinates * dataSize));
+                float gyroX = DataUtils.fourBytesToFloat(data, sampleOffset + 0 * imuDataSize + (numOfSamples * coordinates * imuDataSize));
+                float gyroY = DataUtils.fourBytesToFloat(data, sampleOffset + 1 * imuDataSize + (numOfSamples * coordinates * imuDataSize));
+                float gyroZ = DataUtils.fourBytesToFloat(data, sampleOffset + 2 * imuDataSize + (numOfSamples * coordinates * imuDataSize));
 
                 long sysTime = System.currentTimeMillis();
 
@@ -84,7 +87,11 @@ public class DataUtils {
     }
 
     public static int twoBytesToInt(byte[] bytes, int offset) {
-        return ByteBuffer.wrap(bytes, offset, 2).order(ByteOrder.LITTLE_ENDIAN).getInt();
+//        int value = 0;
+//        for (byte b : bytes) {
+//            value = (value << 8) + (b & 0xFF);
+//        }
+        return ByteBuffer.wrap(bytes, offset, 2).order(ByteOrder.LITTLE_ENDIAN).getShort();
     }
 
     public static float fourBytesToFloat(byte[] bytes, int offset) {
@@ -104,16 +111,6 @@ public class DataUtils {
         return ascii;
     }
 
-    public static byte[] stringToAsciiArray(String str) {
-        char[] chars = str.trim().toCharArray();
-        byte[] ascii = new byte[chars.length];
-        for (int i = 0; i < chars.length; i++) {
-            if (chars[i] > 127) throw new IllegalArgumentException("ascii val= " + (int) chars[i]);
-            ascii[i] = (byte) chars[i];
-        }
-        return ascii;
-    }
-
     public static String getAccAsStr(DataPoint dataPoint) {
         DecimalFormat df = new DecimalFormat("0.00");
         String accStr = "X: " + df.format(dataPoint.getAccX()) + " Y: " + df.format(dataPoint.getAccY()) + " Z: " + df.format(dataPoint.getAccZ());
@@ -127,9 +124,15 @@ public class DataUtils {
     }
 
     public static String getHrAsStr(HrPoint hrPoint) {
-        DecimalFormat df = new DecimalFormat("0.00");
-        String hrStr = "HR: " + df.format(hrPoint.getHr()) + " rrInterval: " + (hrPoint.getRr());
+        DecimalFormat df = new DecimalFormat("0.0");
+        String hrStr = df.format(hrPoint.getHr());
         return hrStr;
+    }
+
+    public static String getPrettyDate(long millis){
+        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+        Date date = new Date(millis);
+       return formatter.format(date);
     }
 
 }

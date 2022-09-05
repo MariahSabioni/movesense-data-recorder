@@ -51,6 +51,7 @@ public class NewSnippetActivity extends AppCompatActivity {
         } else {
             MsgUtils.showToast(getApplicationContext(),"add subjects");
             finish();
+            return;
         }
 
         ArrayList<String> subjects = new ArrayList<>();

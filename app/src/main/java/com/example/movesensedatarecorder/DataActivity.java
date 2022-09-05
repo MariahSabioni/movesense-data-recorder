@@ -67,7 +67,7 @@ public class DataActivity extends Activity {
     private String mDeviceAddress;
     private BleIMUService mBluetoothLeService;
 
-    private String mSubjID, mMov, mLoc, mTimeRecording, mExpID, mWod, mRecordingType;
+    private String mSubjID, mMov, mLoc, mTimeRecording, mExpID, mWod, mRecordingType, mHr;
     private Drawable startRecordDrawable;
     private Drawable stopRecordDrawable;
     private TimerTask timerTask;
@@ -147,6 +147,8 @@ public class DataActivity extends Activity {
                 }
                 buttonRecord.setBackground(startRecordDrawable);
                 expTitleView.setText(R.string.record_exp);
+                toggleFull.setEnabled(true);
+                toggleSnippet.setEnabled(true);
                 record = false;
             }
         });
@@ -168,10 +170,12 @@ public class DataActivity extends Activity {
                 runOnUiThread(() -> {
                     buttonRecord.setBackground(startRecordDrawable);
                     expTitleView.setText(R.string.record_exp);
+                    toggleFull.setEnabled(true);
+                    toggleSnippet.setEnabled(false);
                 });
                 record = false;
                 timer.cancel();
-                Log.e(TAG, "TimerTask finished");
+                Log.i(TAG, "TimerTask finished");
                 try {
                     exportData();
                 } catch (IOException | ClassNotFoundException e) {
@@ -186,7 +190,7 @@ public class DataActivity extends Activity {
         if (requestCode == REQUEST_SNIPPET_SETTINGS && resultCode == Activity.RESULT_OK) {
             expDataSet.clear();
             mRecordingType = "snippet";
-            mWod = null;
+            mWod = "undefined";
             mSubjID = data.getStringExtra(EXTRAS_EXP_SUBJ);
             mMov = data.getStringExtra(EXTRAS_EXP_MOV);
             mLoc = data.getStringExtra(EXTRAS_EXP_LOC);
@@ -195,13 +199,15 @@ public class DataActivity extends Activity {
             record = true;
             buttonRecord.setBackground(stopRecordDrawable);
             expTitleView.setText(R.string.recording_exp);
+            toggleFull.setEnabled(false);
+            toggleSnippet.setEnabled(false);
             //automatic stop
             resetTimerAndTimerTask();
             timer.schedule(timerTask, 1000 * Long.parseLong(mTimeRecording));
         } else if (requestCode == REQUEST_FULL_WOD_SETTINGS && resultCode == Activity.RESULT_OK) {
             expDataSet.clear();
             mRecordingType = "wod";
-            mMov = null;
+            mMov = "undefined";
             mSubjID = data.getStringExtra(EXTRAS_EXP_SUBJ);
             mWod = data.getStringExtra(EXTRAS_EXP_WOD);
             mLoc = data.getStringExtra(EXTRAS_EXP_LOC);
@@ -210,6 +216,8 @@ public class DataActivity extends Activity {
             record = true;
             buttonRecord.setBackground(stopRecordDrawable);
             expTitleView.setText(R.string.recording_exp);
+            toggleFull.setEnabled(false);
+            toggleSnippet.setEnabled(false);
             //automatic stop
             resetTimerAndTimerTask();
             timer.schedule(timerTask, 1000 * Long.parseLong(mTimeRecording));
@@ -299,12 +307,18 @@ public class DataActivity extends Activity {
                             break;
                         case DATA_AVAILABLE:
                             ArrayList<DataPoint> dataPointList = intent.getParcelableArrayListExtra(MOVESENSE_DATA);
-                            Log.i(TAG, "got data: " + dataPointList);
-                            DataPoint dataPoint = dataPointList.get(0);
+                            Log.i(TAG, "got data IMU6");
+                            DataPoint dataPoint = dataPointList.get(0); //UI is updated with the first measurement only...
 
                             if (record) {
                                 for (DataPoint d : dataPointList) {
+                                    //... but data for all points is saved
                                     ExpDataPoint expDataPoint = new ExpDataPoint(d, mExpID, mWod, mMov, mSubjID, mLoc);
+                                    try{
+                                        expDataPoint.setHr(mHr); //read HR stored in global variable
+                                    }catch(Exception e){
+                                        expDataPoint.setHr("undefined");
+                                    }
                                     expDataSet.add(expDataPoint);
                                 }
                             }
@@ -317,8 +331,9 @@ public class DataActivity extends Activity {
                             break;
                         case HR_DATA_AVAILABLE:
                             ArrayList<HrPoint> hrPointList = intent.getParcelableArrayListExtra(MOVESENSE_HR_DATA);
-                            Log.i(TAG, "got data: " + hrPointList);
+                            Log.i(TAG, "got data HR");
                             HrPoint hrPoint = hrPointList.get(0);
+                            mHr = String.valueOf(hrPoint.getHr()); //store HR in global variable
 
                             if (record) {
                                 for (HrPoint d : hrPointList) {
@@ -347,20 +362,25 @@ public class DataActivity extends Activity {
 
     private void exportData() throws IOException, ClassNotFoundException {
         if (expDataSet.isEmpty()) {
-            MsgUtils.showToast(getApplicationContext(), "unable to get data");
+            MsgUtils.showToast(getApplicationContext(), "unable to get IMU6 data");
         }
         try {
-            String heading = "accX,accY,accZ,gyroX,gyroY,gyroZ,time,sysTime,expID,mov,loc,subjID";
+            String heading = "accX,accY,accZ,accCombined,gyroX,gyroY,gyroZ,gyroCombined,hr,time,sysTimeMillis,sysTime,expID,wod,mov,loc,subjID";
             content = heading + "\n" + recordAsCsv();
             saveToExternalStorage();
         } catch (Exception e) {
             e.printStackTrace();
-            MsgUtils.showToast(getApplicationContext(), "unable to export data");
+            MsgUtils.showToast(getApplicationContext(), "unable to export IMU6 data");
         }
     }
 
     private void saveToExternalStorage() {
-        String filename = mMov + "_" + mLoc + "_" + mExpID + ".csv";
+        String filename;
+        if (mWod.equals("undefined")) {
+            filename = ("snippet_" + mMov + "_" + mLoc + "_" + mExpID + ".csv").replaceAll(" ", "_").toLowerCase();
+        } else {
+            filename = ("wod_" + mWod + "_" + mLoc + "_" + mExpID + ".csv").replaceAll(" ", "_").toLowerCase();
+        }
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("text/csv");
