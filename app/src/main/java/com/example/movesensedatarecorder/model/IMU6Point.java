@@ -3,16 +3,13 @@ package com.example.movesensedatarecorder.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-
-public class DataPoint implements Parcelable {
+public class IMU6Point implements Parcelable {
 
     private float accX, accY, accZ, gyroX, gyroY, gyroZ, accCombined, gyroCombined;
     private int time;
     private long sysTime;
 
-    public DataPoint(int time, float accX,float accY,float accZ,float gyroX,float gyroY,float gyroZ, long sysTime ){
+    public IMU6Point(int time, float accX, float accY, float accZ, float gyroX, float gyroY, float gyroZ, long sysTime ){
         this.time = time;
         this.accX = accX;
         this.accY = accY;
@@ -82,18 +79,18 @@ public class DataPoint implements Parcelable {
         out.writeLong(sysTime);
     }
 
-    public static final Parcelable.Creator<DataPoint> CREATOR
-            = new Parcelable.Creator<DataPoint>() {
-        public DataPoint createFromParcel(Parcel in) {
-            return new DataPoint(in);
+    public static final Parcelable.Creator<IMU6Point> CREATOR
+            = new Parcelable.Creator<IMU6Point>() {
+        public IMU6Point createFromParcel(Parcel in) {
+            return new IMU6Point(in);
         }
 
-        public DataPoint[] newArray(int size) {
-            return new DataPoint[size];
+        public IMU6Point[] newArray(int size) {
+            return new IMU6Point[size];
         }
     };
 
-    private DataPoint(Parcel in) {
+    private IMU6Point(Parcel in) {
         time = in.readInt();
         accX = in.readFloat();
         accY = in.readFloat();

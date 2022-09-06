@@ -12,9 +12,11 @@
     <string name="no_acc">No acceleration data</string>
     <string name="no_gyro">No angular velocity data</string>
     <string name="no_hr">No hr data</string>
+    <string name="no_temp">No temperature data</string>
     <string name="acc">Acceleration (m/s²)</string>
     <string name="gyro">Angular velocity (°/s)</string>
     <string name="hr">Heart rate (bpm)</string>
+    <string name="temp">Temperature (°C)</string>
     <string name="requesting">Requesting data...</string>
     <string name="received">Data received!</string>
     <string name="no_service">Movesense service not available</string>

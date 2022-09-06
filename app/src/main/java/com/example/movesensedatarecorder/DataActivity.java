@@ -17,10 +17,11 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.example.movesensedatarecorder.model.DataPoint;
+import com.example.movesensedatarecorder.model.IMU6Point;
 import com.example.movesensedatarecorder.model.ExpDataPoint;
 import com.example.movesensedatarecorder.model.ExpHrDataPoint;
 import com.example.movesensedatarecorder.model.HrPoint;
+import com.example.movesensedatarecorder.model.TempPoint;
 import com.example.movesensedatarecorder.service.BleIMUService;
 import com.example.movesensedatarecorder.service.GattActions;
 import com.example.movesensedatarecorder.utils.DataUtils;
@@ -44,6 +45,7 @@ import static com.example.movesensedatarecorder.service.GattActions.ACTION_GATT_
 import static com.example.movesensedatarecorder.service.GattActions.EVENT;
 import static com.example.movesensedatarecorder.service.GattActions.MOVESENSE_DATA;
 import static com.example.movesensedatarecorder.service.GattActions.MOVESENSE_HR_DATA;
+import static com.example.movesensedatarecorder.service.GattActions.MOVESENSE_TEMP_DATA;
 
 public class DataActivity extends Activity {
 
@@ -60,14 +62,14 @@ public class DataActivity extends Activity {
     public static final String EXTRAS_EXP_LOC = "EXP_LOC";
     public static final String EXTRAS_EXP_TIME = "EXP_TIME";
 
-    private TextView mAccView, mGyroView, mHrView, mStatusView, deviceView, expTitleView;
+    private TextView mAccView, mGyroView, mHrView, mTempView, mStatusView, deviceView, expTitleView;
     private ImageButton buttonRecord;
     private ToggleButton toggleSnippet, toggleFull;
 
     private String mDeviceAddress;
     private BleIMUService mBluetoothLeService;
 
-    private String mSubjID, mMov, mLoc, mTimeRecording, mExpID, mWod, mRecordingType, mHr;
+    private String mSubjID, mMov, mLoc, mTimeRecording, mExpID, mWod, mRecordingType, mHr, mTemp;
     private Drawable startRecordDrawable;
     private Drawable stopRecordDrawable;
     private TimerTask timerTask;
@@ -94,6 +96,7 @@ public class DataActivity extends Activity {
         mAccView = findViewById(R.id.acc_view);
         mGyroView = findViewById(R.id.gyro_view);
         mHrView = findViewById(R.id.hr_view);
+        mTempView = findViewById(R.id.temp_view);
         mStatusView = findViewById(R.id.status_view);
         buttonRecord = findViewById(R.id.button_recording);
         toggleSnippet = findViewById(R.id.toggle_record_exp);
@@ -304,18 +307,21 @@ public class DataActivity extends Activity {
                             mStatusView.setText(R.string.requesting);
                             mAccView.setText(R.string.no_info);
                             mGyroView.setText(R.string.no_info);
+                            mHrView.setText(R.string.no_info);
+                            mTempView.setText(R.string.no_info);
                             break;
-                        case DATA_AVAILABLE:
-                            ArrayList<DataPoint> dataPointList = intent.getParcelableArrayListExtra(MOVESENSE_DATA);
+                        case IMU6_DATA_AVAILABLE:
+                            ArrayList<IMU6Point> IMU6PointList = intent.getParcelableArrayListExtra(MOVESENSE_DATA);
                             Log.i(TAG, "got data IMU6");
-                            DataPoint dataPoint = dataPointList.get(0); //UI is updated with the first measurement only...
+                            IMU6Point IMU6Point = IMU6PointList.get(0); //UI is updated with the first measurement only...
 
                             if (record) {
-                                for (DataPoint d : dataPointList) {
+                                for (IMU6Point d : IMU6PointList) {
                                     //... but data for all points is saved
                                     ExpDataPoint expDataPoint = new ExpDataPoint(d, mExpID, mWod, mMov, mSubjID, mLoc);
                                     try{
                                         expDataPoint.setHr(mHr); //read HR stored in global variable
+                                        expDataPoint.setTemp(mTemp);
                                     }catch(Exception e){
                                         expDataPoint.setHr("undefined");
                                     }
@@ -323,8 +329,8 @@ public class DataActivity extends Activity {
                                 }
                             }
                             mStatusView.setText(R.string.received);
-                            String accStr = DataUtils.getAccAsStr(dataPoint);
-                            String gyroStr = DataUtils.getGyroAsStr(dataPoint);
+                            String accStr = DataUtils.getAccAsStr(IMU6Point);
+                            String gyroStr = DataUtils.getGyroAsStr(IMU6Point);
                             mAccView.setText(accStr);
                             mGyroView.setText(gyroStr);
 
@@ -335,16 +341,29 @@ public class DataActivity extends Activity {
                             HrPoint hrPoint = hrPointList.get(0);
                             mHr = String.valueOf(hrPoint.getHr()); //store HR in global variable
 
-                            if (record) {
-                                for (HrPoint d : hrPointList) {
-                                    ExpHrDataPoint expHrDataPoint = new ExpHrDataPoint(d, mExpID, mWod, mMov, mSubjID, mLoc);
-                                    expHrDataSet.add(expHrDataPoint);
-                                }
-                            }
+//                            if (record) {
+//                                for (HrPoint d : hrPointList) {
+//                                    ExpHrDataPoint expHrDataPoint = new ExpHrDataPoint(d, mExpID, mWod, mMov, mSubjID, mLoc);
+//                                    expHrDataSet.add(expHrDataPoint);
+//                                }
+//                            }
                             mStatusView.setText(R.string.received);
                             String hrStr = DataUtils.getHrAsStr(hrPoint);
                             mHrView.setText(hrStr);
+                            break;
+                        case TEMP_DATA_AVAILABLE:
+                            ArrayList<TempPoint> tempPointList = intent.getParcelableArrayListExtra(MOVESENSE_TEMP_DATA);
+                            Log.i(TAG, "got temp HR");
+                            TempPoint tempPoint = tempPointList.get(0);
+                            mTemp = String.valueOf(tempPoint.getTemp()); //store Temp in global variable
 
+                            mStatusView.setText(R.string.received);
+                            String tempStr = DataUtils.getTempAsStr(tempPoint);
+                            mTempView.setText(tempStr);
+                            break;
+                        case DOUBLE_TAP_DETECTED:
+                            Log.i(TAG, "double tap detected!");
+                            MsgUtils.showToast(getApplicationContext(), "Double tap!");
                             break;
                         case MOVESENSE_SERVICE_NOT_AVAILABLE:
                             mStatusView.setText(R.string.no_service);
@@ -365,7 +384,8 @@ public class DataActivity extends Activity {
             MsgUtils.showToast(getApplicationContext(), "unable to get IMU6 data");
         }
         try {
-            String heading = "accX,accY,accZ,accCombined,gyroX,gyroY,gyroZ,gyroCombined,hr,time,sysTimeMillis,sysTime,expID,wod,mov,loc,subjID";
+            String heading = "accX,accY,accZ,accCombined,gyroX,gyroY,gyroZ,gyroCombined,hr,temp," +
+                    "time,sysTimeMillis,sysTime,expID,wod,mov,loc,subjID";
             content = heading + "\n" + recordAsCsv();
             saveToExternalStorage();
         } catch (Exception e) {

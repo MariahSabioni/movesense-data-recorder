@@ -14,16 +14,15 @@ public class UUIDs {
     public static final UUID CLIENT_CHARACTERISTIC_CONFIG =
             UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
-    public static final String IMU_COMMAND = "Meas/IMU6/52"; // see documentation
-    public static final String IMU_COMMAND_HR = "Meas/HR"; // see documentation
+    public static final String MEAS_IMU6_52 = "Meas/IMU6/52"; // see documentation
+    public static final String MEAS_HR = "Meas/HR"; // see documentation
+    public static final String MEAS_TEMP = "Meas/Temp"; // see documentation
+    public static final String STATES_TAP = "System/States/4"; // see documentation
+    public static final String STATES_DOUBLE_TAP = "System/States/3"; // see documentation
     public static final String MOVESENSE = "Movesense"; // filter for Movesense device
-    public static final byte MOVESENSE_REQUEST = 1, MOVESENSE_RESPONSE = 2, REQUEST_ID = 99, REQUEST_ID_HR = 98;
-
-    public static UUID convertFromInteger(int i) {
-        final long MSB = 0x0000000000001000L;
-        final long LSB = 0x800000805f9b34fbL;
-        long value = i & 0xFFFFFFFF;
-        return new UUID(MSB | (value << 32), LSB);
-    }
+    public static final byte MOVESENSE_RESPONSE = 2; //op code that initiates data notifications
+    public static final byte START_STREAM = 1, STOP_STREAM = 2; //op code that initiates commands
+    public static final byte REQUEST_ID_IMU6 = 99, REQUEST_ID_HR = 98, REQUEST_ID_TEMP = 97,
+            REQUEST_ID_DOUBLE_TAP = 96, REQUEST_ID_TAP = 95;
 
 }

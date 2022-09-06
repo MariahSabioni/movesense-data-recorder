@@ -18,16 +18,22 @@ public class GattActions {
     public final static String MOVESENSE_HR_DATA =
             "com.example.movesensedatarecorder.service.MOVESENSE_HR_DATA";
 
+    //flag for temp data
+    public final static String MOVESENSE_TEMP_DATA =
+            "com.example.movesensedatarecorder.service.MOVESENSE_TEMP_DATA";
+
     //gatt status and events
     public enum Event {
         GATT_CONNECTED("Connected"),
         GATT_DISCONNECTED("Disconnected"),
         GATT_SERVICES_DISCOVERED("Services discovered"),
-        MOVESENSE_SERVICE_DISCOVERED("Movesense service"),
+        MOVESENSE_SERVICE_DISCOVERED("Movesense service discovered"),
         MOVESENSE_SERVICE_NOT_AVAILABLE("Movesense service unavailable"),
-        MOVESENSE_NOTIFICATIONS_ENABLED("Notifications enabled"),
-        DATA_AVAILABLE("Data available"),
-        HR_DATA_AVAILABLE("HR Data available");
+        MOVESENSE_NOTIFICATIONS_ENABLED("Movesense notifications enabled"),
+        IMU6_DATA_AVAILABLE("IMU6 data available"),
+        HR_DATA_AVAILABLE("HR data available"),
+        TEMP_DATA_AVAILABLE("Temp data available"),
+        DOUBLE_TAP_DETECTED("Double tap detected");
 
         @Override
         public String toString() {
