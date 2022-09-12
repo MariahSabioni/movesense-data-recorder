@@ -13,13 +13,13 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.example.movesensedatarecorder.model.IMU6Point;
 import com.example.movesensedatarecorder.model.ExpDataPoint;
-import com.example.movesensedatarecorder.model.ExpHrDataPoint;
 import com.example.movesensedatarecorder.model.HrPoint;
 import com.example.movesensedatarecorder.model.TempPoint;
 import com.example.movesensedatarecorder.service.BleIMUService;
@@ -39,6 +39,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 
 import static com.example.movesensedatarecorder.service.GattActions.ACTION_GATT_MOVESENSE_EVENTS;
@@ -56,29 +57,36 @@ public class DataActivity extends Activity {
 
     private static final int REQUEST_SNIPPET_SETTINGS = 1;
     private static final int REQUEST_FULL_WOD_SETTINGS = 2;
+    private static final int CREATE_FILE = 0;
     public static final String EXTRAS_EXP_SUBJ = "EXP_SUBJ";
     public static final String EXTRAS_EXP_MOV = "EXP_MOV";
     public static final String EXTRAS_EXP_WOD = "EXP_WOD";
     public static final String EXTRAS_EXP_LOC = "EXP_LOC";
     public static final String EXTRAS_EXP_TIME = "EXP_TIME";
 
-    private TextView mAccView, mGyroView, mHrView, mTempView, mStatusView, deviceView, expTitleView;
+    private TextView mAccView, mGyroView, mHrView, mTempView, mStatusView, deviceView, expTitleView, movementView;
     private ImageButton buttonRecord;
-    private ToggleButton toggleSnippet, toggleFull;
+    private ToggleButton toggleSnippet, toggleFull, toggleTransition;
+    private ConstraintLayout recordingMovLayout;
 
     private String mDeviceAddress;
     private BleIMUService mBluetoothLeService;
 
-    private String mSubjID, mMov, mLoc, mTimeRecording, mExpID, mWod, mRecordingType, mHr, mTemp;
-    private Drawable startRecordDrawable;
-    private Drawable stopRecordDrawable;
+    private String mSubjID;
+    private String mMov;
+    private String mLoc;
+    private String mTimeRecording;
+    private String mExpID;
+    private String mWod;
+    private String mHr;
+    private String mTemp;
+    private Drawable startRecordDrawable, stopRecordDrawable;
     private TimerTask timerTask;
     private Timer timer;
     private boolean record = false;
+    private boolean isTransition = false;
     private List<ExpDataPoint> expDataSet = new ArrayList<>();
-    private List<ExpHrDataPoint> expHrDataSet = new ArrayList<>();
     private String content;
-    private static final int CREATE_FILE = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -102,6 +110,12 @@ public class DataActivity extends Activity {
         toggleSnippet = findViewById(R.id.toggle_record_exp);
         toggleFull = findViewById(R.id.toggle_record_full);
         expTitleView = findViewById(R.id.exp_title_view);
+        movementView = findViewById(R.id.movement_view);
+        recordingMovLayout = findViewById(R.id.recording_movement_layout);
+        toggleTransition = findViewById(R.id.toggle_transition);
+
+        recordingMovLayout.setVisibility(View.GONE);
+        movementView.setText(R.string.no_movement);
 
         Resources resources = getResources();
         startRecordDrawable = ResourcesCompat.getDrawable(resources, R.drawable.start_record_icon, null);
@@ -116,18 +130,15 @@ public class DataActivity extends Activity {
         toggleFull.setChecked(false);
         toggleSnippet.setChecked(true);
         toggleFull.setOnCheckedChangeListener((compoundButton, b) -> {
-            if (b) {
-                toggleSnippet.setChecked(false);
-            } else {
-                toggleSnippet.setChecked(true);
-            }
+            toggleSnippet.setChecked(!b);
         });
         toggleSnippet.setOnCheckedChangeListener((compoundButton, b) -> {
-            if (b) {
-                toggleFull.setChecked(false);
-            } else {
-                toggleFull.setChecked(true);
-            }
+            toggleFull.setChecked(!b);
+        });
+
+        toggleTransition.setChecked(false);
+        toggleTransition.setOnCheckedChangeListener((compoundButton, b) -> {
+            isTransition = (b);
         });
 
         //record button listener
@@ -152,6 +163,8 @@ public class DataActivity extends Activity {
                 expTitleView.setText(R.string.record_exp);
                 toggleFull.setEnabled(true);
                 toggleSnippet.setEnabled(true);
+                recordingMovLayout.setVisibility(View.GONE);
+                movementView.setText(R.string.no_movement);
                 record = false;
             }
         });
@@ -174,7 +187,10 @@ public class DataActivity extends Activity {
                     buttonRecord.setBackground(startRecordDrawable);
                     expTitleView.setText(R.string.record_exp);
                     toggleFull.setEnabled(true);
-                    toggleSnippet.setEnabled(false);
+                    toggleSnippet.setEnabled(true);
+                    recordingMovLayout.setVisibility(View.GONE);
+                    movementView.setText(R.string.no_movement);
+                    toggleTransition.setChecked(false);
                 });
                 record = false;
                 timer.cancel();
@@ -190,12 +206,18 @@ public class DataActivity extends Activity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_SNIPPET_SETTINGS && resultCode == Activity.RESULT_OK) {
+        if ( (requestCode == REQUEST_SNIPPET_SETTINGS || requestCode == REQUEST_FULL_WOD_SETTINGS) && resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_SNIPPET_SETTINGS){
+                mWod = "undefined";
+                mMov = data.getStringExtra(EXTRAS_EXP_MOV);
+                movementView.setText(mMov);
+            }else if (requestCode == REQUEST_FULL_WOD_SETTINGS){
+                mMov = "undefined";
+                mWod = data.getStringExtra(EXTRAS_EXP_WOD);
+                movementView.setText(mWod);
+            }
             expDataSet.clear();
-            mRecordingType = "snippet";
-            mWod = "undefined";
             mSubjID = data.getStringExtra(EXTRAS_EXP_SUBJ);
-            mMov = data.getStringExtra(EXTRAS_EXP_MOV);
             mLoc = data.getStringExtra(EXTRAS_EXP_LOC);
             mTimeRecording = data.getStringExtra(EXTRAS_EXP_TIME);
             mExpID = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
@@ -204,27 +226,11 @@ public class DataActivity extends Activity {
             expTitleView.setText(R.string.recording_exp);
             toggleFull.setEnabled(false);
             toggleSnippet.setEnabled(false);
+            recordingMovLayout.setVisibility(View.VISIBLE);
             //automatic stop
             resetTimerAndTimerTask();
             timer.schedule(timerTask, 1000 * Long.parseLong(mTimeRecording));
-        } else if (requestCode == REQUEST_FULL_WOD_SETTINGS && resultCode == Activity.RESULT_OK) {
-            expDataSet.clear();
-            mRecordingType = "wod";
-            mMov = "undefined";
-            mSubjID = data.getStringExtra(EXTRAS_EXP_SUBJ);
-            mWod = data.getStringExtra(EXTRAS_EXP_WOD);
-            mLoc = data.getStringExtra(EXTRAS_EXP_LOC);
-            mTimeRecording = data.getStringExtra(EXTRAS_EXP_TIME);
-            mExpID = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-            record = true;
-            buttonRecord.setBackground(stopRecordDrawable);
-            expTitleView.setText(R.string.recording_exp);
-            toggleFull.setEnabled(false);
-            toggleSnippet.setEnabled(false);
-            //automatic stop
-            resetTimerAndTimerTask();
-            timer.schedule(timerTask, 1000 * Long.parseLong(mTimeRecording));
-        } else if (resultCode == RESULT_OK && requestCode == CREATE_FILE) {
+        } else if (requestCode == CREATE_FILE && resultCode == RESULT_OK) {
             OutputStream fileOutputStream = null;
             try {
                 fileOutputStream = getContentResolver().openOutputStream(data.getData());
@@ -318,12 +324,19 @@ public class DataActivity extends Activity {
                             if (record) {
                                 for (IMU6Point d : IMU6PointList) {
                                     //... but data for all points is saved
-                                    ExpDataPoint expDataPoint = new ExpDataPoint(d, mExpID, mWod, mMov, mSubjID, mLoc);
+                                    ExpDataPoint expDataPoint;
+                                    if (isTransition){
+                                        String mMovTransition = "rest-transition";
+                                        expDataPoint = new ExpDataPoint(d, mExpID, mWod, mMovTransition, mSubjID, mLoc);
+                                    } else {
+                                        expDataPoint = new ExpDataPoint(d, mExpID, mWod, mMov, mSubjID, mLoc);
+                                    }
                                     try{
                                         expDataPoint.setHr(mHr); //read HR stored in global variable
                                         expDataPoint.setTemp(mTemp);
                                     }catch(Exception e){
                                         expDataPoint.setHr("undefined");
+                                        expDataPoint.setTemp("undefined");
                                     }
                                     expDataSet.add(expDataPoint);
                                 }
@@ -341,12 +354,6 @@ public class DataActivity extends Activity {
                             HrPoint hrPoint = hrPointList.get(0);
                             mHr = String.valueOf(hrPoint.getHr()); //store HR in global variable
 
-//                            if (record) {
-//                                for (HrPoint d : hrPointList) {
-//                                    ExpHrDataPoint expHrDataPoint = new ExpHrDataPoint(d, mExpID, mWod, mMov, mSubjID, mLoc);
-//                                    expHrDataSet.add(expHrDataPoint);
-//                                }
-//                            }
                             mStatusView.setText(R.string.received);
                             String hrStr = DataUtils.getHrAsStr(hrPoint);
                             mHrView.setText(hrStr);

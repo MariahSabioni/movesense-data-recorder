@@ -4,7 +4,7 @@
     <string name="home_title">Movesense IMU Data Recorder</string>
     <string name="new_subj">Add \n subject</string>
     <string name="exp_subj">Export subjects data to csv</string>
-    <string name="get_data">Get data (IMU6 @52Hz/ HR)</string>
+    <string name="get_data">Connect Movesense</string>
 
     <string name="new_exp">record experiment</string>
     <string name="record_snippet">labeled snippet</string>
@@ -25,6 +25,11 @@
     <string name="no_device">No device</string>
     <string name="record_exp">record experiment</string>
     <string name="recording_exp">recording…</string>
+
+    <string name="movement_now_title">Now recording:</string>
+    <string name="no_movement">No recording</string>
+    <string name="toggle_rest">Rest/Transition</string>
+    <string name="next">Next</string>
 
     <string name="add_subj_title">add new subject</string>
 
@@ -95,6 +100,7 @@
         <item>devil press</item>
         <item>ktb swing</item>
         <item>ring dip</item>
+        <item>rest-transition</item>
     </string-array>
 
     <string-array name="wod_values">

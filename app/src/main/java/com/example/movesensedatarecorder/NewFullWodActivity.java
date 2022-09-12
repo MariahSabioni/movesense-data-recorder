@@ -89,7 +89,7 @@ public class NewFullWodActivity extends AppCompatActivity {
         buttonRecord = findViewById(R.id.button_record);
         buttonRecord.setOnClickListener(v -> {
             String subjConcat = subjSpinner.getSelectedItem().toString();
-            String subjID = (subjConcat.substring(subjConcat.lastIndexOf("_") + 1));
+            String subjID = subjConcat.substring(subjConcat.lastIndexOf('_', subjConcat.lastIndexOf('_') - 1) + 1);
             setResult(Activity.RESULT_OK,
                     new Intent().putExtra(EXTRAS_EXP_SUBJ, subjID)
                             .putExtra(EXTRAS_EXP_WOD, wodSpinner.getSelectedItem().toString())
