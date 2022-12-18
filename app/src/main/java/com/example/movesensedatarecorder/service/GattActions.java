@@ -18,10 +18,6 @@ public class GattActions {
     public final static String MOVESENSE_HR_DATA =
             "com.example.movesensedatarecorder.service.MOVESENSE_HR_DATA";
 
-    //flag for temp data
-    public final static String MOVESENSE_TEMP_DATA =
-            "com.example.movesensedatarecorder.service.MOVESENSE_TEMP_DATA";
-
     //gatt status and events
     public enum Event {
         GATT_CONNECTED("Connected"),
@@ -32,7 +28,6 @@ public class GattActions {
         MOVESENSE_NOTIFICATIONS_ENABLED("Movesense notifications enabled"),
         IMU6_DATA_AVAILABLE("IMU6 data available"),
         HR_DATA_AVAILABLE("HR data available"),
-        TEMP_DATA_AVAILABLE("Temp data available"),
         DOUBLE_TAP_DETECTED("Double tap detected");
 
         @Override

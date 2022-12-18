@@ -10,9 +10,9 @@ import java.util.stream.Stream;
 public class ExpDataPoint {
 
     private String mov, loc, subjID, expID, wod;
-    private String accX, accY, accZ, accCombined, gyroX, gyroY, gyroZ, gyroCombined, time, sysTime, sysTimeMillis, hr, temp;
+    private String accX, accY, accZ, accCombined, gyroX, gyroY, gyroZ, gyroCombined, time, sysTime, sysTimeMillis, hr;
 
-    public ExpDataPoint(IMU6Point IMU6Point, String mExpID, String mWod, String mMov, String mSubjID, String mLoc){
+    public ExpDataPoint(IMU6Point IMU6Point, String mExpID, String mWod, String mMov, String mSubjID, String mLoc, String mHr){
         this.accX = String.valueOf(IMU6Point.getAccX());
         this.accY = String.valueOf(IMU6Point.getAccY());
         this.accZ = String.valueOf(IMU6Point.getAccZ());
@@ -29,20 +29,13 @@ public class ExpDataPoint {
         this.subjID = mSubjID;
         this.loc = mLoc;
         this.wod = mWod;
-    }
-
-    public void setHr(String hr) {
-        this.hr = hr;
-    }
-
-    public void setTemp(String temp) {
-        this.temp = temp;
+        this.hr = mHr;
     }
 
     public String dataToCsvRow() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return Stream.of(accX, accY, accZ, accCombined, gyroX, gyroY, gyroZ, gyroCombined,
-                            hr, temp, time, sysTimeMillis, sysTime, expID, wod, mov, loc, subjID)
+                            hr, time, sysTimeMillis, sysTime, expID, wod, mov, loc, subjID)
                     .map(value -> value.replaceAll("\"", "\"\""))
                     .map(value -> Stream.of("\"", ",").anyMatch(value::contains) ? "\"" + value + "\"" : value)
                     .collect(Collectors.joining(","));

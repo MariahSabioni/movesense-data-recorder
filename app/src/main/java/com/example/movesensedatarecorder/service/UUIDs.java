@@ -16,13 +16,12 @@ public class UUIDs {
 
     public static final String MEAS_IMU6_52 = "Meas/IMU6/52"; // see documentation
     public static final String MEAS_HR = "Meas/HR"; // see documentation
-    public static final String MEAS_TEMP = "Meas/Temp"; // see documentation
     public static final String STATES_TAP = "System/States/4"; // see documentation
     public static final String STATES_DOUBLE_TAP = "System/States/3"; // see documentation
     public static final String MOVESENSE = "Movesense"; // filter for Movesense device
     public static final byte MOVESENSE_RESPONSE = 2; //op code that initiates data notifications
     public static final byte START_STREAM = 1, STOP_STREAM = 2; //op code that initiates commands
-    public static final byte REQUEST_ID_IMU6 = 99, REQUEST_ID_HR = 98, REQUEST_ID_TEMP = 97,
+    public static final byte REQUEST_ID_IMU6 = 99, REQUEST_ID_HR = 98,
             REQUEST_ID_DOUBLE_TAP = 96, REQUEST_ID_TAP = 95;
 
 }

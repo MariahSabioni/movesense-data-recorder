@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.example.movesensedatarecorder.model.IMU6Point;
 import com.example.movesensedatarecorder.model.HrPoint;
-import com.example.movesensedatarecorder.model.TempPoint;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -32,27 +31,6 @@ public class DataUtils {
             HrPoint hrPoint = new HrPoint(sysTime, hr, rr);
             hrPointList.add(hrPoint);
             return hrPointList;
-        } else {
-            Log.i(TAG, "package with inconsistent length:" + len);
-            return null;
-        }
-    }
-
-    public static ArrayList<TempPoint> TempDataConverter(byte[] data) {
-        ArrayList<TempPoint> tempPointList = new ArrayList<>();
-        int len = data.length;
-        int offset = 2; //byte 1 = op code; byte 2 = request_id
-        int timeDataSize = 4; //32 bit (4 bytes)
-        int tempDataSize = 4; //32 bit (4 bytes)
-        int stdLen = timeDataSize + tempDataSize + offset;
-        // parse and interpret the data, ...
-        if (len == stdLen) {
-            int time = DataUtils.bytesToInt(data, offset, timeDataSize);
-            float temp = DataUtils.bytesToFloat(data, offset, tempDataSize);
-            long sysTime = System.currentTimeMillis();
-            TempPoint tempPoint = new TempPoint(sysTime, time, temp);
-            tempPointList.add(tempPoint);
-            return tempPointList;
         } else {
             Log.i(TAG, "package with inconsistent length:" + len);
             return null;
@@ -150,12 +128,6 @@ public class DataUtils {
         DecimalFormat df = new DecimalFormat("0.0");
         String hrStr = df.format(hrPoint.getHr());
         return hrStr;
-    }
-
-    public static String getTempAsStr(TempPoint tempPoint) {
-        DecimalFormat df = new DecimalFormat("0.0");
-        String tempStr = df.format(tempPoint.getTemp());
-        return tempStr;
     }
 
     public static String getPrettyDate(long millis) {
